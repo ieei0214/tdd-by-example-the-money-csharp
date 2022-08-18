@@ -2,7 +2,7 @@ namespace tdd_by_example_the_money_csharp;
 
 public class Dollar
 {
-    public int amount;
+    public int amount=10;
 
     public Dollar(int amount)
     {
