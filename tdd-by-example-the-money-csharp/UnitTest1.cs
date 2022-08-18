@@ -1,3 +1,6 @@
+using System.Runtime.Intrinsics.X86;
+using FluentAssertions;
+
 namespace tdd_by_example_the_money_csharp
 {
     public class Tests
@@ -8,9 +11,12 @@ namespace tdd_by_example_the_money_csharp
         }
 
         [Test]
-        public void Test1()
+        public void testMultiplication()
         {
-            Assert.Pass();
+            var five = new Dollar(5);
+            five.times(2);
+            five.amount.Should().Be(10);
         }
     }
+    
 }
