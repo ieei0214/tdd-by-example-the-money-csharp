@@ -18,5 +18,4 @@ namespace tdd_by_example_the_money_csharp
             five.amount.Should().Be(10);
         }
     }
-    
 }
