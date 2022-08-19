@@ -16,6 +16,8 @@ namespace tdd_by_example_the_money_csharp
             var five = new Dollar(5);
             five.times(2);
             five.amount.Should().Be(10);
+            five.times(3);
+            five.amount.Should().Be(15);
         }
     }
 }
