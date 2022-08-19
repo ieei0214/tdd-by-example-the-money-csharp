@@ -13,7 +13,7 @@ namespace tdd_by_example_the_money_csharp
         [Test]
         public void testMultiplication()
         {
-            var five = new Dollar(5);
+            var five = Money.dollar(5);
             five.times(2).Should().Be(new Dollar(10));
             five.times(3).Should().Be(new Dollar(15));
         }
