@@ -13,11 +13,4 @@ public class Dollar : Money
     {
         return new Dollar(amount * multiplier);
     }
-
-    public override bool Equals(object? obj)
-    {
-        Money money = (Money) obj;
-
-        return money.amount == amount;
-    }
 }
