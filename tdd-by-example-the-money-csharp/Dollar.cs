@@ -18,6 +18,8 @@ public class Dollar
 
     public override bool Equals(object? obj)
     {
-        return true;
+        Dollar dollar = (Dollar) obj;
+
+        return dollar.amount == amount;
     }
 }
