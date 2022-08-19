@@ -19,5 +19,11 @@ namespace tdd_by_example_the_money_csharp
             product = five.times(3);
             product.amount.Should().Be(15);
         }
+
+        [Test]
+        public void testEquality()
+        {
+            new Dollar(5).Should().Equals(new Dollar(5));
+        }
     }
 }
