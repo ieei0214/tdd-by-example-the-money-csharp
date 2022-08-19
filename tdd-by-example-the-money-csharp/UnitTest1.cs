@@ -31,9 +31,9 @@ namespace tdd_by_example_the_money_csharp
         [Test]
         public void testFrancMultiplication()
         {
-            var five = new Franc(5);
-            five.times(2).Should().Be(new Franc(10));
-            five.times(3).Should().Be(new Franc(15));
+            var five = Money.franc(5);
+            five.times(2).Should().Be(Money.franc(10));
+            five.times(3).Should().Be(Money.franc(15));
         }
     }
 }
