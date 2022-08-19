@@ -14,10 +14,10 @@ namespace tdd_by_example_the_money_csharp
         public void testMultiplication()
         {
             var five = new Dollar(5);
-            five.times(2);
-            five.amount.Should().Be(10);
-            five.times(3);
-            five.amount.Should().Be(15);
+            Dollar product = five.times(2);
+            product.amount.Should().Be(10);
+            product = five.times(3);
+            product.amount.Should().Be(15);
         }
     }
 }
