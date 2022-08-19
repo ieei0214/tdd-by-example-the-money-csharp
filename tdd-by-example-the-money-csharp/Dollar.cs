@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace tdd_by_example_the_money_csharp;
 
 public class Dollar
@@ -12,5 +14,10 @@ public class Dollar
     public Dollar times(int multiplier)
     {
         return new Dollar(amount * multiplier);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return true;
     }
 }
