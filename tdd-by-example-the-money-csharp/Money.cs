@@ -10,4 +10,9 @@ public class Money
 
         return money.amount == amount && this.GetType().Equals(obj.GetType());
     }
+
+    public static Dollar dollar(int amount)
+    {
+        return new Dollar(amount);
+    }
 }
