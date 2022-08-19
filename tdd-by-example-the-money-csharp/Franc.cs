@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace tdd_by_example_the_money_csharp;
 
-public class Franc
+public class Franc : Money
 {
     private int amount;
 
