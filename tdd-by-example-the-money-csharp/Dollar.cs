@@ -9,7 +9,7 @@ public class Dollar : Money
         this.amount = amount;
     }
 
-    public Money times(int multiplier)
+    public override Money times(int multiplier)
     {
         return new Dollar(amount * multiplier);
     }

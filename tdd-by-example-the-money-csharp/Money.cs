@@ -1,6 +1,6 @@
 namespace tdd_by_example_the_money_csharp;
 
-public class Money
+public abstract class Money
 {
     protected int amount;
 
@@ -15,4 +15,7 @@ public class Money
     {
         return new Dollar(amount);
     }
+
+    public abstract Money times(int multiplier);
+
 }
