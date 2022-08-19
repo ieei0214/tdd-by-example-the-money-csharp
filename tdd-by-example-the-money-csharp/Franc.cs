@@ -4,8 +4,6 @@ namespace tdd_by_example_the_money_csharp;
 
 public class Franc : Money
 {
-    private int amount;
-
     public Franc(int amount)
     {
         this.amount = amount;
