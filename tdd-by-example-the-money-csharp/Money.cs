@@ -8,6 +8,6 @@ public class Money
     {
         Money money = (Money) obj;
 
-        return money.amount == amount;
+        return money.amount == amount && this.GetType().Equals(obj.GetType());
     }
 }
