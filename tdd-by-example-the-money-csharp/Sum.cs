@@ -4,4 +4,9 @@ public class Sum
 {
     public Money augend;
     public Money addend;
+
+    public Sum(Money money, Money addend1)
+    {
+
+    }
 }
