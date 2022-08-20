@@ -27,7 +27,10 @@ public abstract class Money
         return new Franc(amount, "CHF");
     }
 
-    public abstract Money times(int multiplier);
+    public virtual Money times(int multiplier)
+    {
+        return null;
+    }
 
     public virtual string currency()
     {
