@@ -23,8 +23,6 @@ namespace tdd_by_example_the_money_csharp
         {
             Money.dollar(5).Should().Be(Money.dollar(5));
             Money.dollar(5).Should().NotBe(Money.dollar(6));
-            Money.franc(5).Should().Be(Money.franc(5));
-            Money.franc(5).Should().NotBe(Money.franc(6));
             Money.franc(5).Should().NotBe(Money.dollar(5));
         }
 
