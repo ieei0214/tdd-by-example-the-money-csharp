@@ -44,6 +44,6 @@ public class Money : Expression
 
     public Expression plus(Money addend)
     {
-        return new Money(Amount + addend.Amount, currency());
+        return new Sum(this, addend);
     }
 }
