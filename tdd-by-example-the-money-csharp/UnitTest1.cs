@@ -70,5 +70,13 @@ namespace tdd_by_example_the_money_csharp
             Money result = bank.reduce(sum, "USD");
             result.Should().Be(Money.dollar(7));
         }
+
+        [Test]
+        public void testReduceMoney()
+        {
+            Bank bank = new Bank();
+            Money result = bank.reduce(Money.dollar(1), "USD");
+            result.Should().Be(Money.dollar(1));
+        }
     }
 }
