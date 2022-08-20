@@ -41,4 +41,9 @@ public class Money
     {
         return Amount + " " + Currency;
     }
+
+    public Money plus(Money addend)
+    {
+        return new Money(Amount + addend.Amount, currency());
+    }
 }
