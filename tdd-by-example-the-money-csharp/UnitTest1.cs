@@ -50,6 +50,16 @@ namespace tdd_by_example_the_money_csharp
             Bank bank = new Bank();
             Money reduced = bank.reduce(sum, "USD");
             reduced.Should().Be(Money.dollar(10));
+        }        
+        
+        [Test]
+        public void testReturnSum()
+        {
+            var five = Money.dollar(5);
+            Expression result = five.plus(five);
+            Sum sum = (Sum) result;
+            sum.augend.Should().Be(five);
+            sum.addend.Should().Be(five);
         }
     }
 }
