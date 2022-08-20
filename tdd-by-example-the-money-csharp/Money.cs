@@ -2,14 +2,20 @@ namespace tdd_by_example_the_money_csharp;
 
 public abstract class Money
 {
-    protected int amount;
-    protected string _currency;
+    protected int Amount;
+    protected string Currency;
+
+    protected Money(int amount, string currency)
+    {
+        Amount = amount;
+        Currency = currency;
+    }
 
     public override bool Equals(object? obj)
     {
         Money money = (Money) obj;
 
-        return money.amount == amount && this.GetType().Equals(obj.GetType());
+        return money.Amount == Amount && this.GetType().Equals(obj.GetType());
     }
 
     public static Money dollar(int amount)
@@ -25,6 +31,6 @@ public abstract class Money
 
     public virtual string currency()
     {
-        return _currency;
+        return Currency;
     }
 }
