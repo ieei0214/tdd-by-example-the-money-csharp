@@ -35,5 +35,12 @@ namespace tdd_by_example_the_money_csharp
             five.times(2).Should().Be(Money.franc(10));
             five.times(3).Should().Be(Money.franc(15));
         }
+
+        [Test]
+        public void testCurrency()
+        {
+            Money.dollar(1).currency().Should().Be("USD");
+            Money.franc(1).currency().Should().Be("CHF");
+        }
     }
 }

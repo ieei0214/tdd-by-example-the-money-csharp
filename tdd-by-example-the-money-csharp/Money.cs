@@ -22,4 +22,5 @@ public abstract class Money
 
     public abstract Money times(int multiplier);
 
+    public abstract string currency();
 }
