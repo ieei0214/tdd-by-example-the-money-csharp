@@ -61,5 +61,14 @@ namespace tdd_by_example_the_money_csharp
             sum.augend.Should().Be(five);
             sum.addend.Should().Be(five);
         }
+
+        [Test]
+        public void testReduceSum()
+        {
+            Expression sum = new Sum(Money.dollar(3), Money.dollar(4));
+            Bank bank = new Bank();
+            Money result = bank.reduce(sum, "USD");
+            result.Should().Be(Money.dollar(7));
+        }
     }
 }
