@@ -1,11 +1,11 @@
 namespace tdd_by_example_the_money_csharp;
 
-public abstract class Money
+public class Money
 {
     protected int Amount;
     protected string Currency;
 
-    protected Money(int amount, string currency)
+    public Money(int amount, string currency)
     {
         Amount = amount;
         Currency = currency;
@@ -35,5 +35,10 @@ public abstract class Money
     public virtual string currency()
     {
         return Currency;
+    }
+
+    public override string ToString()
+    {
+        return Amount + " " + Currency;
     }
 }
