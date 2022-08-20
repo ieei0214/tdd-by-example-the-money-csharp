@@ -12,6 +12,6 @@ public class Franc : Money
 
     public override Money times(int multiplier)
     {
-        return new Franc(amount * multiplier);
+        return new Franc(amount * multiplier, null);
     }
 }
