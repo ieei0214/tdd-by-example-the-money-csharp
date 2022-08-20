@@ -4,9 +4,12 @@ namespace tdd_by_example_the_money_csharp;
 
 public class Franc : Money
 {
+    private readonly string _currency;
+
     public Franc(int amount)
     {
         this.amount = amount;
+        _currency = "CHF";
     }
 
     public override Money times(int multiplier)
@@ -16,6 +19,6 @@ public class Franc : Money
 
     public override string currency()
     {
-        return "CHF";
+        return _currency;
     }
 }
