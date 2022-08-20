@@ -9,6 +9,6 @@ public class Franc : Money
     }
     public override Money times(int multiplier)
     {
-        return Money.franc(Amount * multiplier, Currency);
+        return new Money(Amount * multiplier, Currency);
     }
 }
