@@ -7,7 +7,7 @@ public class Franc : Money
     public Franc(int amount, string currency)
     {
         this.amount = amount;
-        _currency = "CHF";
+        _currency = currency;
     }
 
     public override Money times(int multiplier)
