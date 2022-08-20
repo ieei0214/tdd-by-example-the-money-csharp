@@ -3,6 +3,7 @@ namespace tdd_by_example_the_money_csharp;
 public abstract class Money
 {
     protected int amount;
+    protected string _currency;
 
     public override bool Equals(object? obj)
     {
@@ -22,5 +23,8 @@ public abstract class Money
 
     public abstract Money times(int multiplier);
 
-    public abstract string currency();
+    public virtual string currency()
+    {
+        return _currency;
+    }
 }
