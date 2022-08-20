@@ -2,7 +2,7 @@ namespace tdd_by_example_the_money_csharp;
 
 public class Money : Expression
 {
-    protected int Amount;
+    public int Amount;
     protected string Currency;
 
     public Money(int amount, string currency)

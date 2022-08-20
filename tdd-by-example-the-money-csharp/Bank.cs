@@ -4,6 +4,8 @@ public class Bank
 {
     public Money reduce(Expression source, string to)
     {
-        return Money.dollar(10);
+        Sum sum = (Sum)source;
+        int amount = sum.augend.Amount + sum.addend.Amount;
+        return new Money(amount, to);
     }
 }
