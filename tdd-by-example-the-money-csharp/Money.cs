@@ -29,7 +29,7 @@ public class Money
 
     public virtual Money times(int multiplier)
     {
-        return null;
+        return new Money(Amount * multiplier, Currency);
     }
 
     public virtual string currency()
