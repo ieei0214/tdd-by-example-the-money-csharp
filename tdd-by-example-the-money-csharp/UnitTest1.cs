@@ -45,8 +45,7 @@ namespace tdd_by_example_the_money_csharp
         [Test]
         public void testSimpleAddition()
         {
-            // Money sum = Money.dollar(5).plus(Money.dollar(5));
-            // sum.Should().Be(Money.dollar(10));
+            var five = Money.dollar(5);
             Expression sum = five.plus(five);
             Bank bank = new Bank();
             Money reduced = bank.reduce(sum, "USD");
