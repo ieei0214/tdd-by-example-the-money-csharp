@@ -40,5 +40,12 @@ namespace tdd_by_example_the_money_csharp
             Money.dollar(1).currency().Should().Be("USD");
             Money.franc(1).currency().Should().Be("CHF");
         }
+
+        [Test]
+        public void testSimpleAddition()
+        {
+            Money sum = Money.dollar(5).plus(Money.dollar(5));
+            sum.Should().Be(Money.dollar(10));
+        }
     }
 }
