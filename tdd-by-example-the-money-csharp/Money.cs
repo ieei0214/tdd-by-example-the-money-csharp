@@ -15,7 +15,7 @@ public class Money
     {
         Money money = (Money) obj;
 
-        return money.Amount == Amount && this.GetType().Equals(obj.GetType());
+        return money.Amount == Amount && currency().Equals(money.currency());
     }
 
     public static Money dollar(int amount)
