@@ -46,4 +46,9 @@ public class Money : Expression
     {
         return new Sum(this, addend);
     }
+
+    public Money reduce(string to)
+    {
+        return this;
+    }
 }

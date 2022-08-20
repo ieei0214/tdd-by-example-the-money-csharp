@@ -6,7 +6,7 @@ public class Bank
     {
         if (source.GetType() == typeof(Money))
         {
-            return (Money) source;
+            return ((Money) source).reduce(to);
         }
         Sum sum = (Sum)source;
         return sum.reduce(to);
