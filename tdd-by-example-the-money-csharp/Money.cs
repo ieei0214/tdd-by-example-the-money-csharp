@@ -49,9 +49,7 @@ public class Money : Expression
 
     public Money reduce(Bank bank, string to)
     {
-        int rate = Currency.Equals("CHF") && to.Equals("USD")
-            ? 2
-            : 1;
+        int rate = bank.rate(currency(), to);
         return new Money(Amount / rate, to);
     }
 }
