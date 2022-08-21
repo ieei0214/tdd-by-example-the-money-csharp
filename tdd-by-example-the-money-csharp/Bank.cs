@@ -18,9 +18,12 @@ public class Bank
 
     public int rate(string from, string to)
     {
-        return (from.Equals("CHF") && to.Equals("USD")
-            ? 2
-            : 1);
+        if (from.Equals(to))
+        {
+            return 1; 
+        }
+        var rate = (int) rates[new Pair(from, to)];
+        return rate;
     }
 
 }
