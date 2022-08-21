@@ -47,8 +47,11 @@ public class Money : Expression
         return new Sum(this, addend);
     }
 
-    public Money reduce(string to)
+    public Money reduce(Bank bank, string to)
     {
-        return this;
+        int rate = Currency.Equals("CHF") && to.Equals("USD")
+            ? 2
+            : 1;
+        return new Money(Amount / rate, to);
     }
 }
