@@ -1,0 +1,3784 @@
+[33mcommit 1578efe5586e01350d0af1a8069af9adfc88e56b[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:43:09 2022 +0800
+
+    ch16: [feat] create times() of Expression interface
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Expression.cs b/tdd-by-example-the-money-csharp/Expression.cs[m
+[1mindex fe8ac4b..f19118b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Expression.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Expression.cs[m
+[36m@@ -10,5 +10,6 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+     {[m
+         public Money reduce(Bank bank, string to);[m
+         Expression plus(Expression addend);[m
+[32m+[m[32m        Expression times(int multiplier);[m
+     }[m
+ }[m
+
+[33mcommit 67e3f1f55bf429e14ab99f11f2fb9b244e25d444[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:42:29 2022 +0800
+
+    ch16: [feat] use Expression.times() for sum the times result between augend and addend
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 29ec9c7..585d53e 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -21,4 +21,9 @@[m [mpublic class Sum : Expression[m
+     {[m
+         return new Sum(this, addend);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public Expression times(int multiplier)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return new Sum(augend.times(multiplier), addend.times(multiplier));[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 3fcb46b1a89c0fe04f8744b13a08e6a117d31361[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:41:11 2022 +0800
+
+    ch16: [test] add test for Sum.times() feature
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex eb62229..8ae2785 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -110,5 +110,17 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Money result = bank.reduce(sum,"USD");[m
+             result.Should().Be(Money.dollar(15));[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testSumTimes()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Expression fiveBucks = Money.dollar(5);[m
+[32m+[m[32m            var tenFrancs = Money.franc(10);[m
+[32m+[m[32m            Bank bank = new Bank();[m
+[32m+[m[32m            bank.addRate("CFH", "USD", 2);[m
+[32m+[m[32m            Expression sum = new Sum(fiveBucks, tenFrancs).times(2);[m
+[32m+[m[32m            Money result = bank.reduce(sum, "USD");[m
+[32m+[m[32m            result.Should().Be(Money.dollar(15));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 40655fdc920fc6542b32c4145866bedf68c0a6be[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:38:55 2022 +0800
+
+    ch16: [feat] complete Sum.plus()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 520f16c..29ec9c7 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -19,6 +19,6 @@[m [mpublic class Sum : Expression[m
+ [m
+     public Expression plus(Expression addend)[m
+     {[m
+[31m-        return null;[m
+[32m+[m[32m        return new Sum(this, addend);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 12c0545a08690087b45dfd7f9c0dcb8d175ea588[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:38:02 2022 +0800
+
+    ch16: [test] add test Sum.plus() can be reduce for any currency
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 3961f31..eb62229 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -98,5 +98,17 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             bank.reduce(fiveBucks.plus(tenBucks), "USD");[m
+ [m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testSumPlusMoney()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Expression fiveBucks = Money.dollar(5);[m
+[32m+[m[32m            var tenFrancs = Money.franc(10);[m
+[32m+[m[32m            Bank bank = new Bank();[m
+[32m+[m[32m            bank.addRate("CFH", "USD", 2);[m
+[32m+[m[32m            Expression sum = new Sum(fiveBucks, tenFrancs).plus(fiveBucks);[m
+[32m+[m[32m            Money result = bank.reduce(sum,"USD");[m
+[32m+[m[32m            result.Should().Be(Money.dollar(15));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 54d0fb193cb514c762a84a452d60eccb6971527e[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:31:32 2022 +0800
+
+    ch15: [compile successfully] make Sum class implements Expression, create plus() and fake it return null.
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 72bc0c6..520f16c 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -16,4 +16,9 @@[m [mpublic class Sum : Expression[m
+         int amount = augend.reduce(bank, to).Amount + addend.reduce(bank, to).Amount;[m
+         return new Money(amount, to);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public Expression plus(Expression addend)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 6bc8a8cf71b9f6020bdf717cdc315b64d7c39123[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:30:09 2022 +0800
+
+    ch15: [compile successfully] create plus() of Expression
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Expression.cs b/tdd-by-example-the-money-csharp/Expression.cs[m
+[1mindex df1422c..fe8ac4b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Expression.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Expression.cs[m
+[36m@@ -9,5 +9,6 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+     public interface Expression[m
+     {[m
+         public Money reduce(Bank bank, string to);[m
+[32m+[m[32m        Expression plus(Expression addend);[m
+     }[m
+ }[m
+
+[33mcommit 2cbb17ae394239d84477d561de0ed8d2d0c87b7d[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:29:34 2022 +0800
+
+    ch15: [refactor] declare fiveBucks type from Money to Expression, but Expression haven't plus() yet.
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 1c71886..3961f31 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -91,7 +91,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testMixedAddition()[m
+         {[m
+[31m-            Money fiveBucks = Money.dollar(5);[m
+[32m+[m[32m            Expression fiveBucks = Money.dollar(5);[m
+             Expression tenBucks = Money.franc(10);[m
+             Bank bank = new Bank();[m
+             bank.addRate("CHF", "USD", 2);[m
+
+[33mcommit 5220f769541fd31bcc217cdc0977f26e93324a81[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:28:04 2022 +0800
+
+    ch15: [refactor] declare tenFrancs type from Money to Expression
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 3961f31..1c71886 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -91,7 +91,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testMixedAddition()[m
+         {[m
+[31m-            Expression fiveBucks = Money.dollar(5);[m
+[32m+[m[32m            Money fiveBucks = Money.dollar(5);[m
+             Expression tenBucks = Money.franc(10);[m
+             Bank bank = new Bank();[m
+             bank.addRate("CHF", "USD", 2);[m
+
+[33mcommit d595de66c0940b1a295a9723fb4a4e8f2a4f8799[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:26:50 2022 +0800
+
+    ch15: [refactor] change Money.times() return type from Money to Expression
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 3829937..d9881d2 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -27,7 +27,7 @@[m [mpublic class Money : Expression[m
+         return new Money(amount, "CHF");[m
+     }[m
+ [m
+[31m-    public virtual Money times(int multiplier)[m
+[32m+[m[32m    public virtual Expression times(int multiplier)[m
+     {[m
+         return new Money(Amount * multiplier, Currency);[m
+     }[m
+
+[33mcommit 87af5fdb5a26bade24d27fb0115668c746a0ea5d[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:25:32 2022 +0800
+
+    ch15: [refactor] declare augend and addend parameters as Expression in Sum's constructor, instead of Money
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 3cf782a..72bc0c6 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -5,7 +5,7 @@[m [mpublic class Sum : Expression[m
+     public Expression augend;[m
+     public Expression addend;[m
+ [m
+[31m-    public Sum(Money money, Money addend)[m
+[32m+[m[32m    public Sum(Expression money, Expression addend)[m
+     {[m
+         this.augend = money;[m
+         this.addend = addend;[m
+
+[33mcommit e3ba3ead14907a57e0bd23ae26bc1ecb73c22eff[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:24:56 2022 +0800
+
+    ch15: [compile successfully] declare as Money, instead of Expression, because of only Money has plus() now.
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 2b60717..3829937 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -42,7 +42,7 @@[m [mpublic class Money : Expression[m
+         return Amount + " " + Currency;[m
+     }[m
+ [m
+[31m-    public Expression plus(Money addend)[m
+[32m+[m[32m    public Expression plus(Expression addend)[m
+     {[m
+         return new Sum(this, addend);[m
+     }[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 378212e..3cf782a 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -2,8 +2,8 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Sum : Expression[m
+ {[m
+[31m-    public Money augend;[m
+[31m-    public Money addend;[m
+[32m+[m[32m    public Expression augend;[m
+[32m+[m[32m    public Expression addend;[m
+ [m
+     public Sum(Money money, Money addend)[m
+     {[m
+[36m@@ -13,7 +13,7 @@[m [mpublic class Sum : Expression[m
+ [m
+     public Money reduce(Bank bank, string to)[m
+     {[m
+[31m-        int amount = augend.Amount + addend.Amount;[m
+[32m+[m[32m        int amount = augend.reduce(bank, to).Amount + addend.reduce(bank, to).Amount;[m
+         return new Money(amount, to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit c1d242ce1f6fb47bb67e79e128547bdf318fcce7[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:22:48 2022 +0800
+
+    ch15: [test] add test "5 dollars + 10 francs should be 10 dollars"
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex de7ddcc..3961f31 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -87,5 +87,16 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             var result = bank.reduce(Money.franc(2), "USD");[m
+             result.Should().Be(Money.dollar(1));[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testMixedAddition()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Expression fiveBucks = Money.dollar(5);[m
+[32m+[m[32m            Expression tenBucks = Money.franc(10);[m
+[32m+[m[32m            Bank bank = new Bank();[m
+[32m+[m[32m            bank.addRate("CHF", "USD", 2);[m
+[32m+[m[32m            bank.reduce(fiveBucks.plus(tenBucks), "USD");[m
+[32m+[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit f68f65e663a73e418d45c565813e1e527c122c72[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:08:27 2022 +0800
+
+    ch14: [fix] if from currency is same with to, rate should be 1
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex 1b6e28f..b7f1adc 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -18,9 +18,12 @@[m [mpublic class Bank[m
+ [m
+     public int rate(string from, string to)[m
+     {[m
+[31m-        return (from.Equals("CHF") && to.Equals("USD")[m
+[31m-            ? 2[m
+[31m-            : 1);[m
+[32m+[m[32m        if (from.Equals(to))[m
+[32m+[m[32m        {[m
+[32m+[m[32m            return 1;[m[41m [m
+[32m+[m[32m        }[m
+[32m+[m[32m        var rate = (int) rates[new Pair(from, to)];[m
+[32m+[m[32m        return rate;[m
+     }[m
+ [m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit a14f9d700089dd39f843ebf14e127b4a7e21376d[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:02:59 2022 +0800
+
+    ch14: [feat] put the new rate to hashtable
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex 45d1aac..1b6e28f 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -11,9 +11,9 @@[m [mpublic class Bank[m
+         return source.reduce(this, to);[m
+     }[m
+ [m
+[31m-    public void addRate(string source, string to, int rate)[m
+[32m+[m[32m    public void addRate(string from, string to, int rate)[m
+     {[m
+[31m-        [m
+[32m+[m[32m        rates.Add(new Pair(from, to), rate);[m
+     }[m
+ [m
+     public int rate(string from, string to)[m
+
+[33mcommit 61a357c115e8a09d4d63ee84000861dd3fd02a16[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 09:01:04 2022 +0800
+
+    ch14: [feat] create a Hashtable field "rates" for setting rates
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex 2c8bc71..45d1aac 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -1,7 +1,11 @@[m
+[32m+[m[32musing System.Collections;[m
+[32m+[m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Bank[m
+ {[m
+[32m+[m[32m    private Hashtable rates = new Hashtable();[m
+[32m+[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+         return source.reduce(this, to);[m
+[36m@@ -9,7 +13,7 @@[m [mpublic class Bank[m
+ [m
+     public void addRate(string source, string to, int rate)[m
+     {[m
+[31m-[m
+[32m+[m[41m        [m
+     }[m
+ [m
+     public int rate(string from, string to)[m
+
+[33mcommit d08d42cfe46b8fa57696231009e4975e0bd7c4c7[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 08:57:39 2022 +0800
+
+    ch14: [feat] override Pair.equals() and hashCode()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex c6f1d1f..2c8bc71 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -19,15 +19,4 @@[m [mpublic class Bank[m
+             : 1);[m
+     }[m
+ [m
+[31m-    class Pair[m
+[31m-    {[m
+[31m-        private string from;[m
+[31m-        private string to;[m
+[31m-[m
+[31m-        public Pair(string from, string to)[m
+[31m-        {[m
+[31m-            this.from = from;[m
+[31m-            this.to = to;[m
+[31m-        }[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Pair.cs b/tdd-by-example-the-money-csharp/Pair.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a5198d0[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Pair.cs[m
+[36m@@ -0,0 +1,24 @@[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp;[m
+[32m+[m
+[32m+[m[32mpublic class Pair[m
+[32m+[m[32m{[m
+[32m+[m[32m    private string from;[m
+[32m+[m[32m    private string to;[m
+[32m+[m
+[32m+[m[32m    public Pair(string from, string to)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        this.from = from;[m
+[32m+[m[32m        this.to = to;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public override bool Equals(object? obj)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        Pair pair = obj as Pair;[m
+[32m+[m[32m        return from.Equals(pair.from) && to.Equals(pair.to);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public override int GetHashCode()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return 0;[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+
+[33mcommit d1859b65af5428235526957a30e3b2d312770d04[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 08:54:16 2022 +0800
+
+    ch14: [feat] create a private class Pair in Bank class as HashTable key
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex c568b7b..c6f1d1f 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -18,4 +18,16 @@[m [mpublic class Bank[m
+             ? 2[m
+             : 1);[m
+     }[m
+[32m+[m
+[32m+[m[32m    class Pair[m
+[32m+[m[32m    {[m
+[32m+[m[32m        private string from;[m
+[32m+[m[32m        private string to;[m
+[32m+[m
+[32m+[m[32m        public Pair(string from, string to)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            this.from = from;[m
+[32m+[m[32m            this.to = to;[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 8a4ca9350864aa37ccb318a749b232225b1c199f[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 08:49:15 2022 +0800
+
+    ch14: [refactor] complete Money.reduce() by bank.rate()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 5b29e72..2b60717 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -49,9 +49,7 @@[m [mpublic class Money : Expression[m
+ [m
+     public Money reduce(Bank bank, string to)[m
+     {[m
+[31m-        int rate = Currency.Equals("CHF") && to.Equals("USD")[m
+[31m-            ? 2[m
+[31m-            : 1;[m
+[32m+[m[32m        int rate = bank.rate(currency(), to);[m
+         return new Money(Amount / rate, to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 9a033e1d3a2366899e1e1fa61976780b476f8452[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 08:47:26 2022 +0800
+
+    ch14: [experiment] create rate() of Bank class, and copying the fake implementation from Money.reduce()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex b67a7dc..c568b7b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -6,4 +6,16 @@[m [mpublic class Bank[m
+     {[m
+         return source.reduce(this, to);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public void addRate(string source, string to, int rate)[m
+[32m+[m[32m    {[m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public int rate(string from, string to)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return (from.Equals("CHF") && to.Equals("USD")[m
+[32m+[m[32m            ? 2[m
+[32m+[m[32m            : 1);[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 4bc42cd4c92334bc896c8da73c542765f31d0ec4[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 08:45:07 2022 +0800
+
+    ch14: [experiment] pass bank instance for Expression.reduce(), because only bank know the rate
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex ab3033e..b67a7dc 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -4,6 +4,6 @@[m [mpublic class Bank[m
+ {[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+[31m-        return source.reduce(to);[m
+[32m+[m[32m        return source.reduce(this, to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Expression.cs b/tdd-by-example-the-money-csharp/Expression.cs[m
+[1mindex 807652f..df1422c 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Expression.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Expression.cs[m
+[36m@@ -8,6 +8,6 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+ {[m
+     public interface Expression[m
+     {[m
+[31m-        public Money reduce(string to);[m
+[32m+[m[32m        public Money reduce(Bank bank, string to);[m
+     }[m
+ }[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex df132fb..5b29e72 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -47,8 +47,11 @@[m [mpublic class Money : Expression[m
+         return new Sum(this, addend);[m
+     }[m
+ [m
+[31m-    public Money reduce(string to)[m
+[32m+[m[32m    public Money reduce(Bank bank, string to)[m
+     {[m
+[31m-        return this;[m
+[32m+[m[32m        int rate = Currency.Equals("CHF") && to.Equals("USD")[m
+[32m+[m[32m            ? 2[m
+[32m+[m[32m            : 1;[m
+[32m+[m[32m        return new Money(Amount / rate, to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 114d371..378212e 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -11,7 +11,7 @@[m [mpublic class Sum : Expression[m
+         this.addend = addend;[m
+     }[m
+ [m
+[31m-    public Money reduce(string to)[m
+[32m+[m[32m    public Money reduce(Bank bank, string to)[m
+     {[m
+         int amount = augend.Amount + addend.Amount;[m
+         return new Money(amount, to);[m
+
+[33mcommit 58f3ceea59a23506fb598e917c1d7c78194dcbb6[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sun Aug 21 08:30:26 2022 +0800
+
+    ch14: [test] add test reduce money when different currency
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex b10ef19..de7ddcc 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -78,5 +78,14 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Money result = bank.reduce(Money.dollar(1), "USD");[m
+             result.Should().Be(Money.dollar(1));[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testReduceMoneyDifferentCurrency()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var bank = new Bank();[m
+[32m+[m[32m            bank.addRate("CHF", "USD", 2);[m
+[32m+[m[32m            var result = bank.reduce(Money.franc(2), "USD");[m
+[32m+[m[32m            result.Should().Be(Money.dollar(1));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 457fefb254aa992ddcadf6c670f4d4da45c74597[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 23:14:10 2022 +0800
+
+    ch13: [refactor] remove useless if condition by polymorphism as Expression
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex 73fbeb2..ab3033e 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -4,11 +4,6 @@[m [mpublic class Bank[m
+ {[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+[31m-        if (source.GetType() == typeof(Money))[m
+[31m-        {[m
+[31m-            return ((Money) source).reduce(to);[m
+[31m-        }[m
+[31m-        Sum sum = (Sum)source;[m
+[31m-        return sum.reduce(to);[m
+[32m+[m[32m        return source.reduce(to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 1cd577d518a7bab52213415e4d8eaf817ec2ca97[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 23:13:14 2022 +0800
+
+    ch13: [refactor] create reduce() in Expression interface too.
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Expression.cs b/tdd-by-example-the-money-csharp/Expression.cs[m
+[1mindex fa2968f..807652f 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Expression.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Expression.cs[m
+[36m@@ -8,5 +8,6 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+ {[m
+     public interface Expression[m
+     {[m
+[32m+[m[32m        public Money reduce(string to);[m
+     }[m
+ }[m
+
+[33mcommit fed1e99d93a455d2803fc17fe0f454ea708a38c8[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 23:12:21 2022 +0800
+
+    ch13: [refactor] consider using polymorphism to remove duplication. Create Money.reduce() too.
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex d919a5f..73fbeb2 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -6,7 +6,7 @@[m [mpublic class Bank[m
+     {[m
+         if (source.GetType() == typeof(Money))[m
+         {[m
+[31m-            return (Money) source;[m
+[32m+[m[32m            return ((Money) source).reduce(to);[m
+         }[m
+         Sum sum = (Sum)source;[m
+         return sum.reduce(to);[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex aac4614..df132fb 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -46,4 +46,9 @@[m [mpublic class Money : Expression[m
+     {[m
+         return new Sum(this, addend);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public Money reduce(string to)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return this;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 50145bd9d0d104ce61cddc07cc3eddea4aca35d1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 23:08:11 2022 +0800
+
+    ch13: [test] add test when bank.reduce() pass a money as Expression parameter. And hard-code if condition only for Money type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex ca0bc41..d919a5f 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -4,6 +4,10 @@[m [mpublic class Bank[m
+ {[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+[32m+[m[32m        if (source.GetType() == typeof(Money))[m
+[32m+[m[32m        {[m
+[32m+[m[32m            return (Money) source;[m
+[32m+[m[32m        }[m
+         Sum sum = (Sum)source;[m
+         return sum.reduce(to);[m
+     }[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 133b5af..b10ef19 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -70,5 +70,13 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Money result = bank.reduce(sum, "USD");[m
+             result.Should().Be(Money.dollar(7));[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testReduceMoney()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Bank bank = new Bank();[m
+[32m+[m[32m            Money result = bank.reduce(Money.dollar(1), "USD");[m
+[32m+[m[32m            result.Should().Be(Money.dollar(1));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit ed0d1ba34e85fd1e330bb9a70406c7ac48435450[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 23:01:30 2022 +0800
+
+    ch13: [refactor] move reduce() algorithm to Sum.reduce() to make field can be non-public
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex 10feac0..ca0bc41 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -5,7 +5,6 @@[m [mpublic class Bank[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+         Sum sum = (Sum)source;[m
+[31m-        int amount = sum.augend.Amount + sum.addend.Amount;[m
+[31m-        return new Money(amount, to);[m
+[32m+[m[32m        return sum.reduce(to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex c228c28..114d371 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -10,4 +10,10 @@[m [mpublic class Sum : Expression[m
+         this.augend = money;[m
+         this.addend = addend;[m
+     }[m
+[32m+[m
+[32m+[m[32m    public Money reduce(string to)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        int amount = augend.Amount + addend.Amount;[m
+[32m+[m[32m        return new Money(amount, to);[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 39c6f2a33a0b27c81fbcce1024fa53fb424cdc80[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:57:15 2022 +0800
+
+    ch13: [test] add test reduce sum when currency is the same
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex e4b93b6..10feac0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -4,6 +4,8 @@[m [mpublic class Bank[m
+ {[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+[31m-        return Money.dollar(10);[m
+[32m+[m[32m        Sum sum = (Sum)source;[m
+[32m+[m[32m        int amount = sum.augend.Amount + sum.addend.Amount;[m
+[32m+[m[32m        return new Money(amount, to);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 1218e0b..aac4614 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -2,7 +2,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Money : Expression[m
+ {[m
+[31m-    protected int Amount;[m
+[32m+[m[32m    public int Amount;[m
+     protected string Currency;[m
+ [m
+     public Money(int amount, string currency)[m
+
+[33mcommit daa90aabeacc07ede25d7f624f33f77f4d5522e4[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:52:57 2022 +0800
+
+    ch13: [test] add test reduce sum when currency is the same
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 3dd4ea3..133b5af 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -61,5 +61,14 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             sum.augend.Should().Be(five);[m
+             sum.addend.Should().Be(five);[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testReduceSum()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Expression sum = new Sum(Money.dollar(3), Money.dollar(4));[m
+[32m+[m[32m            Bank bank = new Bank();[m
+[32m+[m[32m            Money result = bank.reduce(sum, "USD");[m
+[32m+[m[32m            result.Should().Be(Money.dollar(7));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 23bd02b92194b319ae230ac1f9aa542eb13810d9[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:49:17 2022 +0800
+
+    ch13: [refactor] assign fields from constructor
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 7ba4cf0..c228c28 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -5,8 +5,9 @@[m [mpublic class Sum : Expression[m
+     public Money augend;[m
+     public Money addend;[m
+ [m
+[31m-    public Sum(Money money, Money addend1)[m
+[32m+[m[32m    public Sum(Money money, Money addend)[m
+     {[m
+[31m-[m
+[32m+[m[32m        this.augend = money;[m
+[32m+[m[32m        this.addend = addend;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 7fbc61c42554138726b797d836c553854fff5b37[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:48:14 2022 +0800
+
+    ch13: [refactor] make Sum class implements Expression interface
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 8171289..7ba4cf0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -1,6 +1,6 @@[m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+[31m-public class Sum[m
+[32m+[m[32mpublic class Sum : Expression[m
+ {[m
+     public Money augend;[m
+     public Money addend;[m
+
+[33mcommit 28696982992510b950638468dc5d49730fbc667c[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:47:52 2022 +0800
+
+    ch13: [refactor] create Sum's constructor
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mindex 1df1f1a..8171289 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Sum.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -4,4 +4,9 @@[m [mpublic class Sum[m
+ {[m
+     public Money augend;[m
+     public Money addend;[m
+[32m+[m
+[32m+[m[32m    public Sum(Money money, Money addend1)[m
+[32m+[m[32m    {[m
+[32m+[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 4a5c729ca7158e20cf931a1a2c726e4740a8d3c9[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:46:47 2022 +0800
+
+    ch13: [refactor] make plus() return a Sum instance
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex d46517b..1218e0b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -44,6 +44,6 @@[m [mpublic class Money : Expression[m
+ [m
+     public Expression plus(Money addend)[m
+     {[m
+[31m-        return new Money(Amount + addend.Amount, currency());[m
+[32m+[m[32m        return new Sum(this, addend);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit dbae21bd14d17bdaee3d46f2980f28deb4438679[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:45:38 2022 +0800
+
+    ch13: [compile successfully] create Sum class with fields "augend" and "addend"
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Sum.cs b/tdd-by-example-the-money-csharp/Sum.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1df1f1a[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Sum.cs[m
+[36m@@ -0,0 +1,7 @@[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp;[m
+[32m+[m
+[32m+[m[32mpublic class Sum[m
+[32m+[m[32m{[m
+[32m+[m[32m    public Money augend;[m
+[32m+[m[32m    public Money addend;[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+
+[33mcommit 0db572c762bb8e3351b6c9856c7c912731080df4[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:44:32 2022 +0800
+
+    ch13: [experiment] add test for plus() operation should return a Expression result as Sum with augend and addend
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 0373b66..3dd4ea3 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -50,6 +50,16 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Bank bank = new Bank();[m
+             Money reduced = bank.reduce(sum, "USD");[m
+             reduced.Should().Be(Money.dollar(10));[m
+[32m+[m[32m        }[m[41m        [m
+[32m+[m[41m        [m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testReturnSum()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var five = Money.dollar(5);[m
+[32m+[m[32m            Expression result = five.plus(five);[m
+[32m+[m[32m            Sum sum = (Sum) result;[m
+[32m+[m[32m            sum.augend.Should().Be(five);[m
+[32m+[m[32m            sum.addend.Should().Be(five);[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit ad2655a28ddd31ba6b695d57bc5d96bc0d00c761[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:37:13 2022 +0800
+
+    ch12: [fake it] hard-code return Money.dollar(10) in Bank.reduce()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex c6ebef0..e4b93b6 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -4,6 +4,6 @@[m [mpublic class Bank[m
+ {[m
+     public Money reduce(Expression source, string to)[m
+     {[m
+[31m-        return null;[m
+[32m+[m[32m        return Money.dollar(10);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit b537cf913b44f82f5a1dcb38bda0f7963d3a0ce4[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:31:39 2022 +0800
+
+    ch12: [make compile successfully] create reduce() and hard-code return null to make compiled succeed
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mindex 9c9306b..c6ebef0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Bank.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -2,4 +2,8 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Bank[m
+ {[m
+[32m+[m[32m    public Money reduce(Expression source, string to)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 44ad49a8e2a93049972a1c35a0c1d1358850c67c[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:30:49 2022 +0800
+
+    ch12: [make compile successfully] create Bank class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Bank.cs b/tdd-by-example-the-money-csharp/Bank.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9c9306b[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Bank.cs[m
+[36m@@ -0,0 +1,5 @@[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp;[m
+[32m+[m
+[32m+[m[32mpublic class Bank[m
+[32m+[m[32m{[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+
+[33mcommit 98a91e47dbad1bd3604add35b6bcc0f99ab73501[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:30:13 2022 +0800
+
+    ch12: [make compile successfully] make Money class implement Expression interface
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 1fda5e7..d46517b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -1,6 +1,6 @@[m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+[31m-public class Money[m
+[32m+[m[32mpublic class Money : Expression[m
+ {[m
+     protected int Amount;[m
+     protected string Currency;[m
+
+[33mcommit 9416de4f1b3b152c40017b50dc25043c60e191be[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:29:48 2022 +0800
+
+    ch12: [make compile successfully] make Money.plus() return Expression
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex c4c8d6c..1fda5e7 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -42,7 +42,7 @@[m [mpublic class Money[m
+         return Amount + " " + Currency;[m
+     }[m
+ [m
+[31m-    public Money plus(Money addend)[m
+[32m+[m[32m    public Expression plus(Money addend)[m
+     {[m
+         return new Money(Amount + addend.Amount, currency());[m
+     }[m
+
+[33mcommit 7cad9c52c9572f88023d12f3b8f235675b1c149f[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:26:08 2022 +0800
+
+    ch12: [make compile successfully] create Expression interface
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Expression.cs b/tdd-by-example-the-money-csharp/Expression.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fa2968f[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Expression.cs[m
+[36m@@ -0,0 +1,12 @@[m
+[32m+[m[32m﻿using System;[m
+[32m+[m[32musing System.Collections.Generic;[m
+[32m+[m[32musing System.Linq;[m
+[32m+[m[32musing System.Text;[m
+[32m+[m[32musing System.Threading.Tasks;[m
+[32m+[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp[m
+[32m+[m[32m{[m
+[32m+[m[32m    public interface Expression[m
+[32m+[m[32m    {[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+
+[33mcommit 38f6472919dee436a871de1c08f178aa89a28f22[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:23:15 2022 +0800
+
+    ch12: [experiment] we can create 5 dollars from factory method
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 3e27967..0373b66 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -45,8 +45,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testSimpleAddition()[m
+         {[m
+[31m-            // Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+[31m-            // sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m            var five = Money.dollar(5);[m
+             Expression sum = five.plus(five);[m
+             Bank bank = new Bank();[m
+             Money reduced = bank.reduce(sum, "USD");[m
+
+[33mcommit 020cdee30cb1aa16f8ad7215796d839a8e7599fa[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:22:46 2022 +0800
+
+    ch12: [experiment] sum should be an expression that came from plus() operation
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex f5cc5e3..3e27967 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32musing System.Linq.Expressions;[m
+ using System.Runtime.Intrinsics.X86;[m
+ using FluentAssertions;[m
+ [m
+[36m@@ -44,8 +45,9 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testSimpleAddition()[m
+         {[m
+[31m-            Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+[31m-            sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m            // Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+[32m+[m[32m            // sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m            Expression sum = five.plus(five);[m
+             Bank bank = new Bank();[m
+             Money reduced = bank.reduce(sum, "USD");[m
+             reduced.Should().Be(Money.dollar(10));[m
+
+[33mcommit 79369c9c8337d314ae7b8015420ba812494b1b1f[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:20:21 2022 +0800
+
+    ch12: [experiment] we need a bank
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex e2f0206..f5cc5e3 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -46,6 +46,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         {[m
+             Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+             sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m            Bank bank = new Bank();[m
+             Money reduced = bank.reduce(sum, "USD");[m
+             reduced.Should().Be(Money.dollar(10));[m
+         }[m
+
+[33mcommit e90eb1ddc2b9054399e80c40fdbb0acb259dd846[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:19:33 2022 +0800
+
+    ch12: [experiment] reduced should came from bank.reduce()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex fad6c38..e2f0206 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -46,6 +46,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         {[m
+             Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+             sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m            Money reduced = bank.reduce(sum, "USD");[m
+             reduced.Should().Be(Money.dollar(10));[m
+         }[m
+     }[m
+
+[33mcommit c5f2e875e2c0e7fa579c40675166b16c363c4901[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:18:40 2022 +0800
+
+    ch12: [experiment] opposite-down, starting from assertion and backward to find(think) where it came from
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex fa1ebef..fad6c38 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -46,6 +46,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         {[m
+             Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+             sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m            reduced.Should().Be(Money.dollar(10));[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 61afe3e9752a67b745f0fff4f32280c267af91a5[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:15:24 2022 +0800
+
+    ch12: [feat] complete plus() by plus addend.amount and create new Money instance then return
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 2a93c7a..c4c8d6c 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -41,4 +41,9 @@[m [mpublic class Money[m
+     {[m
+         return Amount + " " + Currency;[m
+     }[m
+[32m+[m
+[32m+[m[32m    public Money plus(Money addend)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return new Money(Amount + addend.Amount, currency());[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit b2cdbb650f89a94d4835f04ea90d1a12c5ec0ca8[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 22:13:38 2022 +0800
+
+    ch12: [test] add test simple addition for 5 dollar + 5 dollar should be 10 dollar
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 14e6284..fa1ebef 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -40,5 +40,12 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Money.dollar(1).currency().Should().Be("USD");[m
+             Money.franc(1).currency().Should().Be("CHF");[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testSimpleAddition()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Money sum = Money.dollar(5).plus(Money.dollar(5));[m
+[32m+[m[32m            sum.Should().Be(Money.dollar(10));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 2a670615cfb1a39d7a5f41d2a910827b8a66a7ac[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:40:38 2022 +0800
+
+    ch11: [refactor] remove duplicate test case "testDifferentClassEquality" and safe delete Franc class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mdeleted file mode 100644[m
+[1mindex 06512a0..0000000[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ /dev/null[m
+[36m@@ -1,10 +0,0 @@[m
+[31m-using System.ComponentModel;[m
+[31m-[m
+[31m-namespace tdd_by_example_the_money_csharp;[m
+[31m-[m
+[31m-public class Franc : Money[m
+[31m-{[m
+[31m-    public Franc(int amount, string currency) : base(amount, currency)[m
+[31m-    {[m
+[31m-    }[m
+[31m-}[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 3175636..14e6284 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -40,11 +40,5 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Money.dollar(1).currency().Should().Be("USD");[m
+             Money.franc(1).currency().Should().Be("CHF");[m
+         }[m
+[31m-[m
+[31m-        [Test][m
+[31m-        public void testDifferentClassEquality()[m
+[31m-        {[m
+[31m-            new Money(10, "CHF").Should().Be(new Franc(10, "CHF"));[m
+[31m-        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 119a6a6c7c46dc5530084e7db2ff10b1f6c57db1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:39:54 2022 +0800
+
+    ch11: [refactor] remove duplicate meaning assertions
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 3406023..3175636 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -23,8 +23,6 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         {[m
+             Money.dollar(5).Should().Be(Money.dollar(5));[m
+             Money.dollar(5).Should().NotBe(Money.dollar(6));[m
+[31m-            Money.franc(5).Should().Be(Money.franc(5));[m
+[31m-            Money.franc(5).Should().NotBe(Money.franc(6));[m
+             Money.franc(5).Should().NotBe(Money.dollar(5));[m
+         }[m
+ [m
+
+[33mcommit 6dacddd68026a7eba53c0d74e359288e6d7562c4[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:39:42 2022 +0800
+
+    ch11: [refactor] safe delete Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mdeleted file mode 100644[m
+[1mindex 8c7f3a4..0000000[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ /dev/null[m
+[36m@@ -1,10 +0,0 @@[m
+[31m-using System.ComponentModel;[m
+[31m-[m
+[31m-namespace tdd_by_example_the_money_csharp;[m
+[31m-[m
+[31m-public class Dollar : Money[m
+[31m-{[m
+[31m-    public Dollar(int amount, string currency) : base(amount, currency)[m
+[31m-    {[m
+[31m-    }[m
+[31m-}[m
+\ No newline at end of file[m
+
+[33mcommit 971696706bde6db76fe8a4888fb6921606f5eb55[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:39:12 2022 +0800
+
+    ch11: [refactor] return Money instead of Franc or Dollar instance in dollar() and franc() factory methods, to remove reference of Dollar and Franc constructor
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex d189201..2a93c7a 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -20,11 +20,11 @@[m [mpublic class Money[m
+ [m
+     public static Money dollar(int amount)[m
+     {[m
+[31m-        return new Dollar(amount, "USD");[m
+[32m+[m[32m        return new Money(amount, "USD");[m
+     }[m
+     public static Money franc(int amount)[m
+     {[m
+[31m-        return new Franc(amount, "CHF");[m
+[32m+[m[32m        return new Money(amount, "CHF");[m
+     }[m
+ [m
+     public virtual Money times(int multiplier)[m
+
+[33mcommit 2038b8634c235bf737696c2fc5b694fdc0ed5aa0[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:31:51 2022 +0800
+
+    ch10: [refactor] pull member up times() to Money super class, and remove duplicated times() from Fran and Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex eae789a..8c7f3a4 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -7,8 +7,4 @@[m [mpublic class Dollar : Money[m
+     public Dollar(int amount, string currency) : base(amount, currency)[m
+     {[m
+     }[m
+[31m-    public override Money times(int multiplier)[m
+[31m-    {[m
+[31m-        return new Money(Amount * multiplier, Currency);[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex bcce4a5..06512a0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -7,8 +7,4 @@[m [mpublic class Franc : Money[m
+     public Franc(int amount, string currency) : base(amount, currency)[m
+     {[m
+     }[m
+[31m-    public override Money times(int multiplier)[m
+[31m-    {[m
+[31m-        return new Money(Amount * multiplier, Currency);[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 9dbc8e3..d189201 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -29,7 +29,7 @@[m [mpublic class Money[m
+ [m
+     public virtual Money times(int multiplier)[m
+     {[m
+[31m-        return null;[m
+[32m+[m[32m        return new Money(Amount * multiplier, Currency);[m
+     }[m
+ [m
+     public virtual string currency()[m
+
+[33mcommit 25ee70d432682db731cf8ad5456b112ff537f4cd[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:30:58 2022 +0800
+
+    ch10: [fix] equality comparing by amount and currency, instead of type name
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 303ea57..9dbc8e3 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -15,7 +15,7 @@[m [mpublic class Money[m
+     {[m
+         Money money = (Money) obj;[m
+ [m
+[31m-        return money.Amount == Amount && this.GetType().Equals(obj.GetType());[m
+[32m+[m[32m        return money.Amount == Amount && currency().Equals(money.currency());[m
+     }[m
+ [m
+     public static Money dollar(int amount)[m
+
+[33mcommit 15286583b67f33864d3765bf9faa292ca2e09e69[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:18:23 2022 +0800
+
+    ch10: [test] add different type equality assertion for Money and Franc
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex a3ff297..3406023 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -42,5 +42,11 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Money.dollar(1).currency().Should().Be("USD");[m
+             Money.franc(1).currency().Should().Be("CHF");[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testDifferentClassEquality()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            new Money(10, "CHF").Should().Be(new Franc(10, "CHF"));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 2ab2388e6354efc841ea0f9c509e6f491b443cf2[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:06:49 2022 +0800
+
+    ch10: [fix] return Dollar instance in Dollar.times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex d827ce0..eae789a 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -9,6 +9,6 @@[m [mpublic class Dollar : Money[m
+     }[m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return Money.dollar(Amount * multiplier, Currency);[m
+[32m+[m[32m        return new Money(Amount * multiplier, Currency);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 27ec5513c13af34359113da462c772fb2146c49c[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:04:25 2022 +0800
+
+    ch10: [debug] add toString() in Money class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex c4d38ed..303ea57 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -1,11 +1,11 @@[m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+[31m-public abstract class Money[m
+[32m+[m[32mpublic class Money[m
+ {[m
+     protected int Amount;[m
+     protected string Currency;[m
+ [m
+[31m-    protected Money(int amount, string currency)[m
+[32m+[m[32m    public Money(int amount, string currency)[m
+     {[m
+         Amount = amount;[m
+         Currency = currency;[m
+[36m@@ -36,4 +36,9 @@[m [mpublic abstract class Money[m
+     {[m
+         return Currency;[m
+     }[m
+[32m+[m
+[32m+[m[32m    public override string ToString()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return Amount + " " + Currency;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit db73b196af0e750e8dd749815147ff9c1301104e[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 21:11:23 2022 +0800
+
+    ch10: [compile successfully] remove abstract declaration from Money class, and add times() fake implementation to make compiled succeed
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 7b3d2e6..c4d38ed 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -27,7 +27,10 @@[m [mpublic abstract class Money[m
+         return new Franc(amount, "CHF");[m
+     }[m
+ [m
+[31m-    public abstract Money times(int multiplier);[m
+[32m+[m[32m    public virtual Money times(int multiplier)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+ [m
+     public virtual string currency()[m
+     {[m
+
+[33mcommit f46a900d3724d0e2984d4279dd150eb49c8bf3d6[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:55:35 2022 +0800
+
+    ch10: [experiment] use Money, instead of Franc type and constructor
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex fa0c064..bcce4a5 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -9,6 +9,6 @@[m [mpublic class Franc : Money[m
+     }[m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return Money.franc(Amount * multiplier, Currency);[m
+[32m+[m[32m        return new Money(Amount * multiplier, Currency);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 698e1b36e4911cc4f98abcceeb6a6cb5723c3269[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:53:26 2022 +0800
+
+    ch10: [refactor] pass currency, instead of hard-code constant value
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex fbb2b4e..d827ce0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -9,6 +9,6 @@[m [mpublic class Dollar : Money[m
+     }[m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return Money.dollar(Amount * multiplier, "USD");[m
+[32m+[m[32m        return Money.dollar(Amount * multiplier, Currency);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 8d85741..fa0c064 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -9,6 +9,6 @@[m [mpublic class Franc : Money[m
+     }[m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return Money.franc(Amount * multiplier, "CHF");[m
+[32m+[m[32m        return Money.franc(Amount * multiplier, Currency);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 66dc89b9ec77cce07a067fdcda0a28855a5d0627[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:52:52 2022 +0800
+
+    ch10: [refactor] inline factory method in Franc and Dollar times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 91e010e..fbb2b4e 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -4,14 +4,11 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar : Money[m
+ {[m
+[31m-    public Dollar(int amount, string currency)[m
+[32m+[m[32m    public Dollar(int amount, string currency) : base(amount, currency)[m
+     {[m
+[31m-        this.amount = amount;[m
+[31m-        _currency = currency;[m
+     }[m
+[31m-[m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return Money.dollar(amount * multiplier);[m
+[32m+[m[32m        return Money.dollar(Amount * multiplier, "USD");[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex a3ab87b..8d85741 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -4,14 +4,11 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Franc : Money[m
+ {[m
+[31m-    public Franc(int amount, string currency)[m
+[32m+[m[32m    public Franc(int amount, string currency) : base(amount, currency)[m
+     {[m
+[31m-        this.amount = amount;[m
+[31m-        _currency = currency;[m
+     }[m
+[31m-[m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return Money.franc(amount * multiplier);[m
+[32m+[m[32m        return Money.franc(Amount * multiplier, "CHF");[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 71dedd5..7b3d2e6 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -2,14 +2,20 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public abstract class Money[m
+ {[m
+[31m-    protected int amount;[m
+[31m-    protected string _currency;[m
+[32m+[m[32m    protected int Amount;[m
+[32m+[m[32m    protected string Currency;[m
+[32m+[m
+[32m+[m[32m    protected Money(int amount, string currency)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        Amount = amount;[m
+[32m+[m[32m        Currency = currency;[m
+[32m+[m[32m    }[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+         Money money = (Money) obj;[m
+ [m
+[31m-        return money.amount == amount && this.GetType().Equals(obj.GetType());[m
+[32m+[m[32m        return money.Amount == Amount && this.GetType().Equals(obj.GetType());[m
+     }[m
+ [m
+     public static Money dollar(int amount)[m
+[36m@@ -25,6 +31,6 @@[m [mpublic abstract class Money[m
+ [m
+     public virtual string currency()[m
+     {[m
+[31m-        return _currency;[m
+[32m+[m[32m        return Currency;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit eea726ca95ab294f7173fbd2f6cfcbb4765a45bd[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:27:37 2022 +0800
+
+    ch9: [refactor] do the same steps for Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 3bd12b5..91e010e 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -4,14 +4,14 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar : Money[m
+ {[m
+[31m-    public Dollar(int amount)[m
+[32m+[m[32m    public Dollar(int amount, string currency)[m
+     {[m
+         this.amount = amount;[m
+[31m-        _currency = "USD";[m
+[32m+[m[32m        _currency = currency;[m
+     }[m
+ [m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return new Dollar(amount * multiplier);[m
+[32m+[m[32m        return Money.dollar(amount * multiplier);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 1e92517..71dedd5 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -14,7 +14,7 @@[m [mpublic abstract class Money[m
+ [m
+     public static Money dollar(int amount)[m
+     {[m
+[31m-        return new Dollar(amount);[m
+[32m+[m[32m        return new Dollar(amount, "USD");[m
+     }[m
+     public static Money franc(int amount)[m
+     {[m
+
+[33mcommit 36c002356470096e4eba45aefefc812868d7a791[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:26:10 2022 +0800
+
+    ch9: [refactor] set currency as Money field in Franc constructor
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 60ef11b..a3ab87b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -7,7 +7,7 @@[m [mpublic class Franc : Money[m
+     public Franc(int amount, string currency)[m
+     {[m
+         this.amount = amount;[m
+[31m-        _currency = "CHF";[m
+[32m+[m[32m        _currency = currency;[m
+     }[m
+ [m
+     public override Money times(int multiplier)[m
+
+[33mcommit ba811f8704dfe17d5f20e3ff497776140ad56007[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:25:47 2022 +0800
+
+    ch9: [refactor] pass "CHF" as currency parameter in Money.franc() factory method
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex ed12143..1e92517 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -18,7 +18,7 @@[m [mpublic abstract class Money[m
+     }[m
+     public static Money franc(int amount)[m
+     {[m
+[31m-        return new Franc(amount, null);[m
+[32m+[m[32m        return new Franc(amount, "CHF");[m
+     }[m
+ [m
+     public abstract Money times(int multiplier);[m
+
+[33mcommit 0ce8d2ae37441b992c610d0bb52cfe6a9835ba72[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:25:11 2022 +0800
+
+    ch9: [refactor] use factory method, instead of Franc constructor to make currency setting via factory method
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 949ff03..60ef11b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -12,6 +12,6 @@[m [mpublic class Franc : Money[m
+ [m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return new Franc(amount * multiplier, null);[m
+[32m+[m[32m        return Money.franc(amount * multiplier);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit f9c4669d7c6d9d31b4ba773d3fa0419b6bc5dae1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:17:47 2022 +0800
+
+    ch9: [compile successfully] pass null as currency to Franc constructor to make it compiled successfully
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 09f745b..949ff03 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -12,6 +12,6 @@[m [mpublic class Franc : Money[m
+ [m
+     public override Money times(int multiplier)[m
+     {[m
+[31m-        return new Franc(amount * multiplier);[m
+[32m+[m[32m        return new Franc(amount * multiplier, null);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex c4e6ee7..ed12143 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -18,7 +18,7 @@[m [mpublic abstract class Money[m
+     }[m
+     public static Money franc(int amount)[m
+     {[m
+[31m-        return new Franc(amount);[m
+[32m+[m[32m        return new Franc(amount, null);[m
+     }[m
+ [m
+     public abstract Money times(int multiplier);[m
+
+[33mcommit 4f21b4b393d23290e294e2db4abbb2d005dbcbb9[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:11:47 2022 +0800
+
+    ch9: [refactor] add a constructor parameter "currency" in Franc constructor, and got 2 compiling errors
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 2b248e4..09f745b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -4,7 +4,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Franc : Money[m
+ {[m
+[31m-    public Franc(int amount)[m
+[32m+[m[32m    public Franc(int amount, string currency)[m
+     {[m
+         this.amount = amount;[m
+         _currency = "CHF";[m
+
+[33mcommit 8af9fe20d5b8eb13dd462a5b87e8294f81793b08[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:10:00 2022 +0800
+
+    ch9: [refactor] pull member up field "currency" and currency(), and remove duplicated field and function from Franc and Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 5ce9395..3bd12b5 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -4,8 +4,6 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar : Money[m
+ {[m
+[31m-    private readonly string _currency;[m
+[31m-[m
+     public Dollar(int amount)[m
+     {[m
+         this.amount = amount;[m
+[36m@@ -16,9 +14,4 @@[m [mpublic class Dollar : Money[m
+     {[m
+         return new Dollar(amount * multiplier);[m
+     }[m
+[31m-[m
+[31m-    public override string currency()[m
+[31m-    {[m
+[31m-        return _currency;[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex d6b6bd1..2b248e4 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -4,8 +4,6 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Franc : Money[m
+ {[m
+[31m-    private readonly string _currency;[m
+[31m-[m
+     public Franc(int amount)[m
+     {[m
+         this.amount = amount;[m
+[36m@@ -16,9 +14,4 @@[m [mpublic class Franc : Money[m
+     {[m
+         return new Franc(amount * multiplier);[m
+     }[m
+[31m-[m
+[31m-    public override string currency()[m
+[31m-    {[m
+[31m-        return _currency;[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex d0895b1..c4e6ee7 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -3,6 +3,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ public abstract class Money[m
+ {[m
+     protected int amount;[m
+[32m+[m[32m    protected string _currency;[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[36m@@ -22,5 +23,8 @@[m [mpublic abstract class Money[m
+ [m
+     public abstract Money times(int multiplier);[m
+ [m
+[31m-    public abstract string currency();[m
+[32m+[m[32m    public virtual string currency()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return _currency;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 6196f8c75d4e84ef04eba92cedcb2904b825fa74[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:08:34 2022 +0800
+
+    ch9: [refactor] extract field "currency" from hard-code constant "USD" and initialize in constructor in Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex c94b1df..5ce9395 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -4,9 +4,12 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar : Money[m
+ {[m
+[32m+[m[32m    private readonly string _currency;[m
+[32m+[m
+     public Dollar(int amount)[m
+     {[m
+         this.amount = amount;[m
+[32m+[m[32m        _currency = "USD";[m
+     }[m
+ [m
+     public override Money times(int multiplier)[m
+[36m@@ -16,6 +19,6 @@[m [mpublic class Dollar : Money[m
+ [m
+     public override string currency()[m
+     {[m
+[31m-        return "USD";[m
+[32m+[m[32m        return _currency;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 9854d30a90793c2911c40f8d039929f7a5735b60[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:08:26 2022 +0800
+
+    ch9: [refactor] extract field "currency" from hard-code constant "CHF" and initialize in constructor in Franc class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 9419617..d6b6bd1 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -4,9 +4,12 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Franc : Money[m
+ {[m
+[32m+[m[32m    private readonly string _currency;[m
+[32m+[m
+     public Franc(int amount)[m
+     {[m
+         this.amount = amount;[m
+[32m+[m[32m        _currency = "CHF";[m
+     }[m
+ [m
+     public override Money times(int multiplier)[m
+[36m@@ -16,6 +19,6 @@[m [mpublic class Franc : Money[m
+ [m
+     public override string currency()[m
+     {[m
+[31m-        return "CHF";[m
+[32m+[m[32m        return _currency;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 518862a9df4031fae6844a18083ac703af930c40[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 20:01:24 2022 +0800
+
+    ch9: [feat] Franc and Dollar class implement abstract currency() to return its currency content
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 8214287..c94b1df 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -13,4 +13,9 @@[m [mpublic class Dollar : Money[m
+     {[m
+         return new Dollar(amount * multiplier);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public override string currency()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return "USD";[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex f78d0e4..9419617 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -13,4 +13,9 @@[m [mpublic class Franc : Money[m
+     {[m
+         return new Franc(amount * multiplier);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public override string currency()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return "CHF";[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 34df22795231dc796cc7cb0044851c08c6a39d5e[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Sat Aug 20 19:55:16 2022 +0800
+
+    ch9: [feat] create new abstract currency() in Money class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex ffd04ba..d0895b1 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -22,4 +22,5 @@[m [mpublic abstract class Money[m
+ [m
+     public abstract Money times(int multiplier);[m
+ [m
+[32m+[m[32m    public abstract string currency();[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 859cc57..a3ff297 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -35,5 +35,12 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             five.times(2).Should().Be(Money.franc(10));[m
+             five.times(3).Should().Be(Money.franc(15));[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testCurrency()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Money.dollar(1).currency().Should().Be("USD");[m
+[32m+[m[32m            Money.franc(1).currency().Should().Be("CHF");[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 4590ce11452228e11bfe9997f75c50fd486e8558[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:47:17 2022 +0800
+
+    ch8: [feat] complete Money.franc() factory method like dollar() factory method
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 54d4207..ffd04ba 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -15,6 +15,10 @@[m [mpublic abstract class Money[m
+     {[m
+         return new Dollar(amount);[m
+     }[m
+[32m+[m[32m    public static Money franc(int amount)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return new Franc(amount);[m
+[32m+[m[32m    }[m
+ [m
+     public abstract Money times(int multiplier);[m
+ [m
+
+[33mcommit 530cd83b043a8d0f738afd7aaf1646322c4813a1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:42:41 2022 +0800
+
+    ch8: [test] adjust test case from Franc constructor to new Money.franc() factory method
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 127f484..859cc57 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -31,9 +31,9 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testFrancMultiplication()[m
+         {[m
+[31m-            var five = new Franc(5);[m
+[31m-            five.times(2).Should().Be(new Franc(10));[m
+[31m-            five.times(3).Should().Be(new Franc(15));[m
+[32m+[m[32m            var five = Money.franc(5);[m
+[32m+[m[32m            five.times(2).Should().Be(Money.franc(10));[m
+[32m+[m[32m            five.times(3).Should().Be(Money.franc(15));[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 7668e756beab2d11d8ea8808194d24be0de93da1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:39:07 2022 +0800
+
+    ch8: [refactor] adjust test case from Dollar constructor to Money.dollar() factory method
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 5eec2e6..127f484 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -14,18 +14,18 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         public void testMultiplication()[m
+         {[m
+             Money five = Money.dollar(5);[m
+[31m-            five.times(2).Should().Be(new Dollar(10));[m
+[31m-            five.times(3).Should().Be(new Dollar(15));[m
+[32m+[m[32m            five.times(2).Should().Be(Money.dollar(10));[m
+[32m+[m[32m            five.times(3).Should().Be(Money.dollar(15));[m
+         }[m
+ [m
+         [Test][m
+         public void testEquality()[m
+         {[m
+[31m-            new Dollar(5).Should().Be(new Dollar(5));[m
+[31m-            new Dollar(5).Should().NotBe(new Dollar(6));[m
+[31m-            new Franc(5).Should().Be(new Franc(5));[m
+[31m-            new Franc(5).Should().NotBe(new Franc(6));[m
+[31m-            new Franc(5).Should().NotBe(new Dollar(5));[m
+[32m+[m[32m            Money.dollar(5).Should().Be(Money.dollar(5));[m
+[32m+[m[32m            Money.dollar(5).Should().NotBe(Money.dollar(6));[m
+[32m+[m[32m            Money.franc(5).Should().Be(Money.franc(5));[m
+[32m+[m[32m            Money.franc(5).Should().NotBe(Money.franc(6));[m
+[32m+[m[32m            Money.franc(5).Should().NotBe(Money.dollar(5));[m
+         }[m
+ [m
+         [Test][m
+
+[33mcommit d3554b845138d2be3884350708194273d35f7c71[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:15:02 2022 +0800
+
+    ch8: [refactor] change Money.dollar() factory method return type from Dollar to Money type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 007a52f..54d4207 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -11,7 +11,7 @@[m [mpublic abstract class Money[m
+         return money.amount == amount && this.GetType().Equals(obj.GetType());[m
+     }[m
+ [m
+[31m-    public static Dollar dollar(int amount)[m
+[32m+[m[32m    public static Money dollar(int amount)[m
+     {[m
+         return new Dollar(amount);[m
+     }[m
+
+[33mcommit fe8886a9d6610e85923ce28d73d9c56cdc03129c[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:11:39 2022 +0800
+
+    ch8: [feat] made Money class as abstract, and add abstract times() function
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 96583cb..8214287 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -9,7 +9,7 @@[m [mpublic class Dollar : Money[m
+         this.amount = amount;[m
+     }[m
+ [m
+[31m-    public Money times(int multiplier)[m
+[32m+[m[32m    public override Money times(int multiplier)[m
+     {[m
+         return new Dollar(amount * multiplier);[m
+     }[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 69fb362..f78d0e4 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -9,7 +9,7 @@[m [mpublic class Franc : Money[m
+         this.amount = amount;[m
+     }[m
+ [m
+[31m-    public Money times(int multiplier)[m
+[32m+[m[32m    public override Money times(int multiplier)[m
+     {[m
+         return new Franc(amount * multiplier);[m
+     }[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 91d2d10..007a52f 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -1,6 +1,6 @@[m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+[31m-public class Money[m
+[32m+[m[32mpublic abstract class Money[m
+ {[m
+     protected int amount;[m
+ [m
+[36m@@ -15,4 +15,7 @@[m [mpublic class Money[m
+     {[m
+         return new Dollar(amount);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public abstract Money times(int multiplier);[m
+[32m+[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit f7c3c1b56383b092ca84329e491b48325c5d6932[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:06:59 2022 +0800
+
+    ch8: [test] make five dollar variable as Money to remove reference of Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex f02ae4c..5eec2e6 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -13,7 +13,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testMultiplication()[m
+         {[m
+[31m-            var five = Money.dollar(5);[m
+[32m+[m[32m            Money five = Money.dollar(5);[m
+             five.times(2).Should().Be(new Dollar(10));[m
+             five.times(3).Should().Be(new Dollar(15));[m
+         }[m
+
+[33mcommit a367caa4675fd8d2857cb09205885642fc4ad8c4[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:06:01 2022 +0800
+
+    ch8: [feat] use factory method to return Dollar instance
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex f95da31..91d2d10 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -10,4 +10,9 @@[m [mpublic class Money[m
+ [m
+         return money.amount == amount && this.GetType().Equals(obj.GetType());[m
+     }[m
+[32m+[m
+[32m+[m[32m    public static Dollar dollar(int amount)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return new Dollar(amount);[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 2d5b366a1eba04ce2a2ada21d9e1afb912ca0b5a[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 16:05:51 2022 +0800
+
+    ch8: [test] define how to get 5 dollar instance by new dollar() function
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex ff40ec7..f02ae4c 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -13,7 +13,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testMultiplication()[m
+         {[m
+[31m-            var five = new Dollar(5);[m
+[32m+[m[32m            var five = Money.dollar(5);[m
+             five.times(2).Should().Be(new Dollar(10));[m
+             five.times(3).Should().Be(new Dollar(15));[m
+         }[m
+
+[33mcommit 56b2fb840e73473af61c248a4e1b90031ee32081[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:49:57 2022 +0800
+
+    ch8: [refactor] make Dollar's times() and Franc's times() return the same type Money, to show them duplicated in abstract level
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 29188e4..96583cb 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -9,7 +9,7 @@[m [mpublic class Dollar : Money[m
+         this.amount = amount;[m
+     }[m
+ [m
+[31m-    public Dollar times(int multiplier)[m
+[32m+[m[32m    public Money times(int multiplier)[m
+     {[m
+         return new Dollar(amount * multiplier);[m
+     }[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex fb9448e..69fb362 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -9,7 +9,7 @@[m [mpublic class Franc : Money[m
+         this.amount = amount;[m
+     }[m
+ [m
+[31m-    public Franc times(int multiplier)[m
+[32m+[m[32m    public Money times(int multiplier)[m
+     {[m
+         return new Franc(amount * multiplier);[m
+     }[m
+
+[33mcommit d87fca342df99877b425d9f823161866fdcfa375[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:46:10 2022 +0800
+
+    ch7: [fix] equals() not only compare with amount, but also type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex cbdb983..f95da31 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -8,6 +8,6 @@[m [mpublic class Money[m
+     {[m
+         Money money = (Money) obj;[m
+ [m
+[31m-        return money.amount == amount;[m
+[32m+[m[32m        return money.amount == amount && this.GetType().Equals(obj.GetType());[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 20c68c43e44b81d137ca678de643115c50a41ddf[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:40:52 2022 +0800
+
+    ch7: [experiment] equality compare with Franc and Dollar?
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 82cdf81..ff40ec7 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -25,6 +25,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             new Dollar(5).Should().NotBe(new Dollar(6));[m
+             new Franc(5).Should().Be(new Franc(5));[m
+             new Franc(5).Should().NotBe(new Franc(6));[m
+[32m+[m[32m            new Franc(5).Should().NotBe(new Dollar(5));[m
+         }[m
+ [m
+         [Test][m
+
+[33mcommit 1c9935dfe2b6cde234f1d86f8c16a6d76895522f[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:33:37 2022 +0800
+
+    ch6: [refactor] remove Franc's equals() because of duplication with Super class Money's equals()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 146595d..fb9448e 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -13,11 +13,4 @@[m [mpublic class Franc : Money[m
+     {[m
+         return new Franc(amount * multiplier);[m
+     }[m
+[31m-[m
+[31m-    public override bool Equals(object? obj)[m
+[31m-    {[m
+[31m-        Money money = (Money) obj;[m
+[31m-        [m
+[31m-        return money.amount == amount;[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit ee73b0169e017ceabbaba35f61a2c9fcd1b72983[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:33:00 2022 +0800
+
+    ch6: [refactor] rename variable from "franc" to "money" to match its type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex cfcb617..146595d 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -16,8 +16,8 @@[m [mpublic class Franc : Money[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        Money franc = (Money) obj;[m
+[32m+[m[32m        Money money = (Money) obj;[m
+         [m
+[31m-        return franc.amount == amount;[m
+[32m+[m[32m        return money.amount == amount;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 47cbe1e824d7b04c394294268191f1e8d93cf2ce[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:31:48 2022 +0800
+
+    ch6: [refactor] convert type from (Franc) to (Money)
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex 2c0a0c4..cfcb617 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -16,7 +16,7 @@[m [mpublic class Franc : Money[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        Money franc = (Franc) obj;[m
+[32m+[m[32m        Money franc = (Money) obj;[m
+         [m
+         return franc.amount == amount;[m
+     }[m
+
+[33mcommit 7250c5f58625979725db4d24ba539bd55fefe302[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:31:27 2022 +0800
+
+    ch6: [refactor] declare variable "france" type from Franc to Money type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex df8aba2..2c0a0c4 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -16,7 +16,7 @@[m [mpublic class Franc : Money[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        Franc franc = (Franc) obj;[m
+[32m+[m[32m        Money franc = (Franc) obj;[m
+         [m
+         return franc.amount == amount;[m
+     }[m
+
+[33mcommit f0db393877267f39580268775206601d04dc1174[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:30:28 2022 +0800
+
+    ch6: [refactor] remove France field "amount", use the super class Money's protected "amount" field
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex ad43b75..df8aba2 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -4,8 +4,6 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Franc : Money[m
+ {[m
+[31m-    private int amount;[m
+[31m-[m
+     public Franc(int amount)[m
+     {[m
+         this.amount = amount;[m
+
+[33mcommit 2f074a4e59fbb23ac048edd82a6566a1db31045d[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:30:04 2022 +0800
+
+    ch6: [refactor] make Franc class extends Money class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mindex f05e078..ad43b75 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Franc.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -2,7 +2,7 @@[m [musing System.ComponentModel;[m
+ [m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+[31m-public class Franc[m
+[32m+[m[32mpublic class Franc : Money[m
+ {[m
+     private int amount;[m
+ [m
+
+[33mcommit 2cb3c65a67cfa7445977ddf502b9ea8e7f4a4872[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:29:04 2022 +0800
+
+    ch6: [test] add Franc equality test cases
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 7c667aa..82cdf81 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -23,6 +23,8 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         {[m
+             new Dollar(5).Should().Be(new Dollar(5));[m
+             new Dollar(5).Should().NotBe(new Dollar(6));[m
+[32m+[m[32m            new Franc(5).Should().Be(new Franc(5));[m
+[32m+[m[32m            new Franc(5).Should().NotBe(new Franc(6));[m
+         }[m
+ [m
+         [Test][m
+
+[33mcommit fb755d25567773fd2b12942103bc1c2d2c545ff2[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 15:27:24 2022 +0800
+
+    ch6: [refactor] pull member up, Dollar.equals() move to super class Money class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 67f5f10..29188e4 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -13,11 +13,4 @@[m [mpublic class Dollar : Money[m
+     {[m
+         return new Dollar(amount * multiplier);[m
+     }[m
+[31m-[m
+[31m-    public override bool Equals(object? obj)[m
+[31m-    {[m
+[31m-        Money money = (Money) obj;[m
+[31m-[m
+[31m-        return money.amount == amount;[m
+[31m-    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 2038462..cbdb983 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -3,4 +3,11 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ public class Money[m
+ {[m
+     protected int amount;[m
+[32m+[m
+[32m+[m[32m    public override bool Equals(object? obj)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        Money money = (Money) obj;[m
+[32m+[m
+[32m+[m[32m        return money.amount == amount;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit d63d562c4088c61305de8de485b6324f8a0d0240[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 14:46:38 2022 +0800
+
+    ch6: [refactor] rename variable "dollar" to "money" to match its type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex d6433f2..67f5f10 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -16,8 +16,8 @@[m [mpublic class Dollar : Money[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        Money dollar = (Money) obj;[m
+[32m+[m[32m        Money money = (Money) obj;[m
+ [m
+[31m-        return dollar.amount == amount;[m
+[32m+[m[32m        return money.amount == amount;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit cb2a81e42b5484b16d01a2b244c0d65977a3fda1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 13:56:27 2022 +0800
+
+    ch6: [refactor] make object convert type from (Dollar) to (Money)
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex cdbb3f1..d6433f2 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -16,7 +16,7 @@[m [mpublic class Dollar : Money[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        Money dollar = (Dollar) obj;[m
+[32m+[m[32m        Money dollar = (Money) obj;[m
+ [m
+         return dollar.amount == amount;[m
+     }[m
+
+[33mcommit bb1a0b17c560bd4dce20920da54f15389fa59945[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 13:52:55 2022 +0800
+
+    ch6: [refactor] declare dollar variable as Money, instead of Dollar type
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex f3d2fb8..cdbb3f1 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -16,7 +16,7 @@[m [mpublic class Dollar : Money[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        Dollar dollar = (Dollar) obj;[m
+[32m+[m[32m        Money dollar = (Dollar) obj;[m
+ [m
+         return dollar.amount == amount;[m
+     }[m
+
+[33mcommit be85c14b1cbb4622978e17a19dc3605a10f1e041[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 13:50:42 2022 +0800
+
+    ch6: [refactor] pull member up "amount" from Dollar class to Money
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex e7aef90..f3d2fb8 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -4,8 +4,6 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar : Money[m
+ {[m
+[31m-    private int amount;[m
+[31m-[m
+     public Dollar(int amount)[m
+     {[m
+         this.amount = amount;[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mindex 36621c2..2038462 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Money.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -2,4 +2,5 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Money[m
+ {[m
+[32m+[m[32m    protected int amount;[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 14a4de06cd078b5cfe7ed29b235c87ffd751fb37[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 13:49:53 2022 +0800
+
+    ch6: [feat] make Dollar extends Money class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 7e595ce..e7aef90 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -2,7 +2,7 @@[m [musing System.ComponentModel;[m
+ [m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+[31m-public class Dollar[m
+[32m+[m[32mpublic class Dollar : Money[m
+ {[m
+     private int amount;[m
+ [m
+
+[33mcommit 8c3c5e2ee6eb0df06b15ab1e2217fa0f08d5890e[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 13:49:06 2022 +0800
+
+    ch6: [feat] create a empty class: Money
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Money.cs b/tdd-by-example-the-money-csharp/Money.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..36621c2[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Money.cs[m
+[36m@@ -0,0 +1,5 @@[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp;[m
+[32m+[m
+[32m+[m[32mpublic class Money[m
+[32m+[m[32m{[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+
+[33mcommit 880b419ec1aa485b1ba31b8ae6d79b4bc1f11ff2[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:35:09 2022 +0800
+
+    ch5: [feat] complete Franc class by copying from Dollar class
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Franc.cs b/tdd-by-example-the-money-csharp/Franc.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f05e078[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Franc.cs[m
+[36m@@ -0,0 +1,25 @@[m
+[32m+[m[32musing System.ComponentModel;[m
+[32m+[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp;[m
+[32m+[m
+[32m+[m[32mpublic class Franc[m
+[32m+[m[32m{[m
+[32m+[m[32m    private int amount;[m
+[32m+[m
+[32m+[m[32m    public Franc(int amount)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        this.amount = amount;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public Franc times(int multiplier)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return new Franc(amount * multiplier);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public override bool Equals(object? obj)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        Franc franc = (Franc) obj;[m
+[32m+[m[41m        [m
+[32m+[m[32m        return franc.amount == amount;[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 14b8e4a..7c667aa 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -24,5 +24,13 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             new Dollar(5).Should().Be(new Dollar(5));[m
+             new Dollar(5).Should().NotBe(new Dollar(6));[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testFrancMultiplication()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            var five = new Franc(5);[m
+[32m+[m[32m            five.times(2).Should().Be(new Franc(10));[m
+[32m+[m[32m            five.times(3).Should().Be(new Franc(15));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit b7d10ed7a1fbd13e6e3a092bf1a6f2f21ae8ceb5[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:14:50 2022 +0800
+
+    ch4: [refactor] make Dollar.amount field declare private
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 234eedf..7e595ce 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -4,7 +4,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar[m
+ {[m
+[31m-    public int amount;[m
+[32m+[m[32m    private int amount;[m
+ [m
+     public Dollar(int amount)[m
+     {[m
+
+[33mcommit ad4ecb908c001e31dde472c3ec81ee20615ec8fe[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:14:33 2022 +0800
+
+    ch4: [refactor] inline the temporary variable "product"
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex c70d6cf..14b8e4a 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -14,10 +14,8 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         public void testMultiplication()[m
+         {[m
+             var five = new Dollar(5);[m
+[31m-            Dollar product = five.times(2);[m
+[31m-            product.Should().Be(new Dollar(10));[m
+[31m-            product = five.times(3);[m
+[31m-            product.Should().Be(new Dollar(15));[m
+[32m+[m[32m            five.times(2).Should().Be(new Dollar(10));[m
+[32m+[m[32m            five.times(3).Should().Be(new Dollar(15));[m
+         }[m
+ [m
+         [Test][m
+
+[33mcommit 41238a1c50c1b3339713ef5c49b72f6782f2ac55[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:12:06 2022 +0800
+
+    ch4: [test] refactor test, modify another assertEquals() to compare Dollar instance too
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 0653418..c70d6cf 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -17,7 +17,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             Dollar product = five.times(2);[m
+             product.Should().Be(new Dollar(10));[m
+             product = five.times(3);[m
+[31m-            product.amount.Should().Be(15);[m
+[32m+[m[32m            product.Should().Be(new Dollar(15));[m
+         }[m
+ [m
+         [Test][m
+
+[33mcommit c4470516daebd632686e156b1b00807614eac2d9[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:11:35 2022 +0800
+
+    ch4: [test] refactor test to assertEquals() with Dollar instance, instead of amount value in test
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 7009081..0653418 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -15,7 +15,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         {[m
+             var five = new Dollar(5);[m
+             Dollar product = five.times(2);[m
+[31m-            product.amount.Should().Be(10);[m
+[32m+[m[32m            product.Should().Be(new Dollar(10));[m
+             product = five.times(3);[m
+             product.amount.Should().Be(15);[m
+         }[m
+
+[33mcommit 29013f4a2017463e05fb3a9903154141314daaff[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:05:42 2022 +0800
+
+    ch3: [refactor] equality comparing with dollar.amount value
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 917bf41..234eedf 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -18,6 +18,8 @@[m [mpublic class Dollar[m
+ [m
+     public override bool Equals(object? obj)[m
+     {[m
+[31m-        return true;[m
+[32m+[m[32m        Dollar dollar = (Dollar) obj;[m
+[32m+[m
+[32m+[m[32m        return dollar.amount == amount;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 348924c5a69402c9015a927436a8f7cf045df8b7[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 11:00:16 2022 +0800
+
+    ch3: [test] add the second assertion for Triangulation to make production code work in real
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex efeb26f..7009081 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -24,6 +24,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         public void testEquality()[m
+         {[m
+             new Dollar(5).Should().Be(new Dollar(5));[m
+[32m+[m[32m            new Dollar(5).Should().NotBe(new Dollar(6));[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 9d0d28337a833c865e7c08702fd94b140492c608[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 10:57:34 2022 +0800
+
+    ch3: [fake it] override Dollar.equals() and hard-code return true
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex f9c346b..917bf41 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -1,3 +1,5 @@[m
+[32m+[m[32musing System.ComponentModel;[m
+[32m+[m
+ namespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar[m
+[36m@@ -13,4 +15,9 @@[m [mpublic class Dollar[m
+     {[m
+         return new Dollar(amount * multiplier);[m
+     }[m
+[32m+[m
+[32m+[m[32m    public override bool Equals(object? obj)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        return true;[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex a32f496..efeb26f 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -23,7 +23,7 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         [Test][m
+         public void testEquality()[m
+         {[m
+[31m-            new Dollar(5).Should().Equals(new Dollar(5));[m
+[32m+[m[32m            new Dollar(5).Should().Be(new Dollar(5));[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 661f0380f4cabf9d46f6092675b4cd0e8dbeae6b[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 09:57:37 2022 +0800
+
+    ch3: [test] test 5 dollar should be equal to another 5 dollar
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 9a38071..a32f496 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -19,5 +19,11 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             product = five.times(3);[m
+             product.amount.Should().Be(15);[m
+         }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void testEquality()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            new Dollar(5).Should().Equals(new Dollar(5));[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 4bcab4be717cda46bb6fb78278de2bf9c69aece1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 09:27:26 2022 +0800
+
+    ch2: [refactor] return new Dollar instance in times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex fdcc889..f9c346b 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -11,7 +11,6 @@[m [mpublic class Dollar[m
+ [m
+     public Dollar times(int multiplier)[m
+     {[m
+[31m-        amount *= multiplier;[m
+[31m-        return null;[m
+[32m+[m[32m        return new Dollar(amount * multiplier);[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit e7f5b0064243d9d3d7a2aeabd08ae848d22bf59e[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 09:25:10 2022 +0800
+
+    ch2: [compile successfully] change times() API to return Dollar, and hard-code return null to compile successfully
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 33a727d..fdcc889 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -9,8 +9,9 @@[m [mpublic class Dollar[m
+         this.amount = amount;[m
+     }[m
+ [m
+[31m-    public void times(int multiplier)[m
+[32m+[m[32m    public Dollar times(int multiplier)[m
+     {[m
+         amount *= multiplier;[m
+[32m+[m[32m        return null;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit c06424b366420bc21545276adad2bcf54af2d10d[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 08:51:03 2022 +0800
+
+    ch2: [test] define how we want to use times(), it should return another Dollar object
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 02d9f3d..9a38071 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -14,10 +14,10 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         public void testMultiplication()[m
+         {[m
+             var five = new Dollar(5);[m
+[31m-            five.times(2);[m
+[31m-            five.amount.Should().Be(10);[m
+[31m-            five.times(3);[m
+[31m-            five.amount.Should().Be(15);[m
+[32m+[m[32m            Dollar product = five.times(2);[m
+[32m+[m[32m            product.amount.Should().Be(10);[m
+[32m+[m[32m            product = five.times(3);[m
+[32m+[m[32m            product.amount.Should().Be(15);[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit dfe72a8357f4c5d078414b0632e4b096388f26bd[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Fri Aug 19 08:44:18 2022 +0800
+
+    ch2: [experiment] try five.times(3) should be 15 by current API
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex ff9b9a0..02d9f3d 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -16,6 +16,8 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             var five = new Dollar(5);[m
+             five.times(2);[m
+             five.amount.Should().Be(10);[m
+[32m+[m[32m            five.times(3);[m
+[32m+[m[32m            five.amount.Should().Be(15);[m
+         }[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit a6b144c506a32abc985ccfd0f7b3492594a2cdcb[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:37:52 2022 +0800
+
+    ch1: [refactor] use *= to simplify code
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 74c0ffa..33a727d 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -11,6 +11,6 @@[m [mpublic class Dollar[m
+ [m
+     public void times(int multiplier)[m
+     {[m
+[31m-        amount = amount * multiplier;[m
+[32m+[m[32m        amount *= multiplier;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit f232e9d187bb61fea6aadde558b66411226ab927[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:37:15 2022 +0800
+
+    ch1: [refactor] use multiplier, instead of constant value 2 in times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 96c7be0..74c0ffa 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -11,6 +11,6 @@[m [mpublic class Dollar[m
+ [m
+     public void times(int multiplier)[m
+     {[m
+[31m-        amount = amount * 2;[m
+[32m+[m[32m        amount = amount * multiplier;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit b001a53cfa3d07f0aab55e6bd4ccc29c7277caa8[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:36:31 2022 +0800
+
+    ch1: [refactor] use multiplier, instead of constant value 2 in times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex f17d0e8..96c7be0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -11,6 +11,6 @@[m [mpublic class Dollar[m
+ [m
+     public void times(int multiplier)[m
+     {[m
+[31m-        amount = 5 * 2;[m
+[32m+[m[32m        amount = amount * 2;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit f8439ee157b94092050de49ccabd7c40f65d9eea[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:36:01 2022 +0800
+
+    ch1: [refactor] initialize amount by constructor parameter
+
+[33mcommit 464248348f9a24d04f887b3dd2379f1b988bc2a1[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:34:17 2022 +0800
+
+    ch1: [refactor] move amount=5*2 assignment from field to times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 531f802..f17d0e8 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -2,7 +2,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar[m
+ {[m
+[31m-    public int amount=5 * 2;[m
+[32m+[m[32m    public int amount;[m
+ [m
+     public Dollar(int amount)[m
+     {[m
+[36m@@ -11,5 +11,6 @@[m [mpublic class Dollar[m
+ [m
+     public void times(int multiplier)[m
+     {[m
+[32m+[m[32m        amount = 5 * 2;[m
+     }[m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit e4919312be29ac50f10c87b4beb6bd8404e0a450[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:33:11 2022 +0800
+
+    ch1: [refactor] make fake constant value 10 to be real logic 5*2, still got the green bar
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex 54d0734..531f802 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -2,7 +2,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar[m
+ {[m
+[31m-    public int amount=10;[m
+[32m+[m[32m    public int amount=5 * 2;[m
+ [m
+     public Dollar(int amount)[m
+     {[m
+
+[33mcommit a6c906581bf707ae0cea69352b09cc77223bec85[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:31:05 2022 +0800
+
+    ch1: [fake it] hard-code amount is 10 to pass test
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mindex bf644dd..54d0734 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -2,7 +2,7 @@[m [mnamespace tdd_by_example_the_money_csharp;[m
+ [m
+ public class Dollar[m
+ {[m
+[31m-    public int amount;[m
+[32m+[m[32m    public int amount=10;[m
+ [m
+     public Dollar(int amount)[m
+     {[m
+
+[33mcommit 16415a22f7bf0a38f2f0b13e06351e1022690c2f[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:29:00 2022 +0800
+
+    ch1:[compile success] create Dollar class, constructor, field and times()
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/Dollar.cs b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bf644dd[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Dollar.cs[m
+[36m@@ -0,0 +1,15 @@[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp;[m
+[32m+[m
+[32m+[m[32mpublic class Dollar[m
+[32m+[m[32m{[m
+[32m+[m[32m    public int amount;[m
+[32m+[m
+[32m+[m[32m    public Dollar(int amount)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        this.amount = amount;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public void times(int multiplier)[m
+[32m+[m[32m    {[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex 69a7148..ff9b9a0 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -18,5 +18,4 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+             five.amount.Should().Be(10);[m
+         }[m
+     }[m
+[31m-    [m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 57784c17d630fb31933aad43e1c7f04414221ac0[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:27:02 2022 +0800
+
+    Ch1:[test] test 5 dollars times(2) should be 10
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mindex fc68c31..69a7148 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -1,3 +1,6 @@[m
+[32m+[m[32musing System.Runtime.Intrinsics.X86;[m
+[32m+[m[32musing FluentAssertions;[m
+[32m+[m
+ namespace tdd_by_example_the_money_csharp[m
+ {[m
+     public class Tests[m
+[36m@@ -8,9 +11,12 @@[m [mnamespace tdd_by_example_the_money_csharp[m
+         }[m
+ [m
+         [Test][m
+[31m-        public void Test1()[m
+[32m+[m[32m        public void testMultiplication()[m
+         {[m
+[31m-            Assert.Pass();[m
+[32m+[m[32m            var five = new Dollar(5);[m
+[32m+[m[32m            five.times(2);[m
+[32m+[m[32m            five.amount.Should().Be(10);[m
+         }[m
+     }[m
+[32m+[m[41m    [m
+ }[m
+\ No newline at end of file[m
+
+[33mcommit 94df4bf07932cf92c7285ea209da332def20937d[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:20:54 2022 +0800
+
+    add FluentAssertions
+
+[1mdiff --git a/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj b/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj[m
+[1mindex 291f642..c879334 100644[m
+[1m--- a/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj[m
+[1m+++ b/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj[m
+[36m@@ -10,6 +10,7 @@[m
+   </PropertyGroup>[m
+ [m
+   <ItemGroup>[m
+[32m+[m[32m    <PackageReference Include="FluentAssertions" Version="6.7.0" />[m
+     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />[m
+     <PackageReference Include="NUnit" Version="3.13.3" />[m
+     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />[m
+
+[33mcommit d5a719d930a37c38b2c646b899349ccfdc9a3c2c[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:18:45 2022 +0800
+
+    Add project files.
+
+[1mdiff --git a/tdd-by-example-the-money-csharp.sln b/tdd-by-example-the-money-csharp.sln[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f78b15e[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp.sln[m
+[36m@@ -0,0 +1,25 @@[m
+[32m+[m[32m﻿[m
+[32m+[m[32mMicrosoft Visual Studio Solution File, Format Version 12.00[m
+[32m+[m[32m# Visual Studio Version 17[m
+[32m+[m[32mVisualStudioVersion = 17.4.32804.182[m
+[32m+[m[32mMinimumVisualStudioVersion = 10.0.40219.1[m
+[32m+[m[32mProject("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tdd-by-example-the-money-csharp", "tdd-by-example-the-money-csharp\tdd-by-example-the-money-csharp.csproj", "{47963BFA-F63D-4235-8D6B-47AF4B8D7F2D}"[m
+[32m+[m[32mEndProject[m
+[32m+[m[32mGlobal[m
+[32m+[m	[32mGlobalSection(SolutionConfigurationPlatforms) = preSolution[m
+[32m+[m		[32mDebug|Any CPU = Debug|Any CPU[m
+[32m+[m		[32mRelease|Any CPU = Release|Any CPU[m
+[32m+[m	[32mEndGlobalSection[m
+[32m+[m	[32mGlobalSection(ProjectConfigurationPlatforms) = postSolution[m
+[32m+[m		[32m{47963BFA-F63D-4235-8D6B-47AF4B8D7F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU[m
+[32m+[m		[32m{47963BFA-F63D-4235-8D6B-47AF4B8D7F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU[m
+[32m+[m		[32m{47963BFA-F63D-4235-8D6B-47AF4B8D7F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU[m
+[32m+[m		[32m{47963BFA-F63D-4235-8D6B-47AF4B8D7F2D}.Release|Any CPU.Build.0 = Release|Any CPU[m
+[32m+[m	[32mEndGlobalSection[m
+[32m+[m	[32mGlobalSection(SolutionProperties) = preSolution[m
+[32m+[m		[32mHideSolutionNode = FALSE[m
+[32m+[m	[32mEndGlobalSection[m
+[32m+[m	[32mGlobalSection(ExtensibilityGlobals) = postSolution[m
+[32m+[m		[32mSolutionGuid = {9CBCB538-3756-4E9C-866A-28138E1AF5A4}[m
+[32m+[m	[32mEndGlobalSection[m
+[32m+[m[32mEndGlobal[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/UnitTest1.cs b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fc68c31[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/UnitTest1.cs[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32mnamespace tdd_by_example_the_money_csharp[m
+[32m+[m[32m{[m
+[32m+[m[32m    public class Tests[m
+[32m+[m[32m    {[m
+[32m+[m[32m        [SetUp][m
+[32m+[m[32m        public void Setup()[m
+[32m+[m[32m        {[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        [Test][m
+[32m+[m[32m        public void Test1()[m
+[32m+[m[32m        {[m
+[32m+[m[32m            Assert.Pass();[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/Usings.cs b/tdd-by-example-the-money-csharp/Usings.cs[m
+[1mnew file mode 100644[m
+[1mindex 0000000..cefced4[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/Usings.cs[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32mglobal using NUnit.Framework;[m
+\ No newline at end of file[m
+[1mdiff --git a/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj b/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj[m
+[1mnew file mode 100644[m
+[1mindex 0000000..291f642[m
+[1m--- /dev/null[m
+[1m+++ b/tdd-by-example-the-money-csharp/tdd-by-example-the-money-csharp.csproj[m
+[36m@@ -0,0 +1,20 @@[m
+[32m+[m[32m<Project Sdk="Microsoft.NET.Sdk">[m
+[32m+[m
+[32m+[m[32m  <PropertyGroup>[m
+[32m+[m[32m    <TargetFramework>net6.0</TargetFramework>[m
+[32m+[m[32m    <RootNamespace>tdd_by_example_the_money_csharp</RootNamespace>[m
+[32m+[m[32m    <ImplicitUsings>enable</ImplicitUsings>[m
+[32m+[m[32m    <Nullable>enable</Nullable>[m
+[32m+[m
+[32m+[m[32m    <IsPackable>false</IsPackable>[m
+[32m+[m[32m  </PropertyGroup>[m
+[32m+[m
+[32m+[m[32m  <ItemGroup>[m
+[32m+[m[32m    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />[m
+[32m+[m[32m    <PackageReference Include="NUnit" Version="3.13.3" />[m
+[32m+[m[32m    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />[m
+[32m+[m[32m    <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />[m
+[32m+[m[32m    <PackageReference Include="coverlet.collector" Version="3.1.2" />[m
+[32m+[m[32m  </ItemGroup>[m
+[32m+[m
+[32m+[m[32m</Project>[m
+
+[33mcommit 945a60cea57a8e62d2d1e6ae6a418e1033593727[m
+Author: Ricky Liu <ieei.liu@gmail.com>
+Date:   Thu Aug 18 15:18:44 2022 +0800
+
+    Add .gitattributes, .gitignore, and README.md.
+
+[1mdiff --git a/.gitattributes b/.gitattributes[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1ff0c42[m
+[1m--- /dev/null[m
+[1m+++ b/.gitattributes[m
+[36m@@ -0,0 +1,63 @@[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m# Set default behavior to automatically normalize line endings.[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m* text=auto[m
+[32m+[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m# Set default behavior for command prompt diff.[m
+[32m+[m[32m#[m
+[32m+[m[32m# This is need for earlier builds of msysgit that does not have it on by[m
+[32m+[m[32m# default for csharp files.[m
+[32m+[m[32m# Note: This is only used by command line[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m#*.cs     diff=csharp[m
+[32m+[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m# Set the merge driver for project and solution files[m
+[32m+[m[32m#[m
+[32m+[m[32m# Merging from the command prompt will add diff markers to the files if there[m
+[32m+[m[32m# are conflicts (Merging from VS is not affected by the settings below, in VS[m
+[32m+[m[32m# the diff markers are never inserted). Diff markers may cause the following[m[41m [m
+[32m+[m[32m# file extensions to fail to load in VS. An alternative would be to treat[m
+[32m+[m[32m# these files as binary and thus will always conflict and require user[m
+[32m+[m[32m# intervention with every merge. To do so, just uncomment the entries below[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m#*.sln       merge=binary[m
+[32m+[m[32m#*.csproj    merge=binary[m
+[32m+[m[32m#*.vbproj    merge=binary[m
+[32m+[m[32m#*.vcxproj   merge=binary[m
+[32m+[m[32m#*.vcproj    merge=binary[m
+[32m+[m[32m#*.dbproj    merge=binary[m
+[32m+[m[32m#*.fsproj    merge=binary[m
+[32m+[m[32m#*.lsproj    merge=binary[m
+[32m+[m[32m#*.wixproj   merge=binary[m
+[32m+[m[32m#*.modelproj merge=binary[m
+[32m+[m[32m#*.sqlproj   merge=binary[m
+[32m+[m[32m#*.wwaproj   merge=binary[m
+[32m+[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m# behavior for image files[m
+[32m+[m[32m#[m
+[32m+[m[32m# image files are treated as binary by default.[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m#*.jpg   binary[m
+[32m+[m[32m#*.png   binary[m
+[32m+[m[32m#*.gif   binary[m
+[32m+[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m# diff behavior for common document formats[m
+[32m+[m[32m#[m[41m [m
+[32m+[m[32m# Convert binary document formats to text before diffing them. This feature[m
+[32m+[m[32m# is only available from the command line. Turn it on by uncommenting the[m[41m [m
+[32m+[m[32m# entries below.[m
+[32m+[m[32m###############################################################################[m
+[32m+[m[32m#*.doc   diff=astextplain[m
+[32m+[m[32m#*.DOC   diff=astextplain[m
+[32m+[m[32m#*.docx  diff=astextplain[m
+[32m+[m[32m#*.DOCX  diff=astextplain[m
+[32m+[m[32m#*.dot   diff=astextplain[m
+[32m+[m[32m#*.DOT   diff=astextplain[m
+[32m+[m[32m#*.pdf   diff=astextplain[m
+[32m+[m[32m#*.PDF   diff=astextplain[m
+[32m+[m[32m#*.rtf   diff=astextplain[m
+[32m+[m[32m#*.RTF   diff=astextplain[m
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9491a2f[m
+[1m--- /dev/null[m
+[1m+++ b/.gitignore[m
+[36m@@ -0,0 +1,363 @@[m
+[32m+[m[32m## Ignore Visual Studio temporary files, build results, and[m
+[32m+[m[32m## files generated by popular Visual Studio add-ons.[m
+[32m+[m[32m##[m
+[32m+[m[32m## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore[m
+[32m+[m
+[32m+[m[32m# User-specific files[m
+[32m+[m[32m*.rsuser[m
+[32m+[m[32m*.suo[m
+[32m+[m[32m*.user[m
+[32m+[m[32m*.userosscache[m
+[32m+[m[32m*.sln.docstates[m
+[32m+[m
+[32m+[m[32m# User-specific files (MonoDevelop/Xamarin Studio)[m
+[32m+[m[32m*.userprefs[m
+[32m+[m
+[32m+[m[32m# Mono auto generated files[m
+[32m+[m[32mmono_crash.*[m
+[32m+[m
+[32m+[m[32m# Build results[m
+[32m+[m[32m[Dd]ebug/[m
+[32m+[m[32m[Dd]ebugPublic/[m
+[32m+[m[32m[Rr]elease/[m
+[32m+[m[32m[Rr]eleases/[m
+[32m+[m[32mx64/[m
+[32m+[m[32mx86/[m
+[32m+[m[32m[Ww][Ii][Nn]32/[m
+[32m+[m[32m[Aa][Rr][Mm]/[m
+[32m+[m[32m[Aa][Rr][Mm]64/[m
+[32m+[m[32mbld/[m
+[32m+[m[32m[Bb]in/[m
+[32m+[m[32m[Oo]bj/[m
+[32m+[m[32m[Oo]ut/[m
+[32m+[m[32m[Ll]og/[m
+[32m+[m[32m[Ll]ogs/[m
+[32m+[m
+[32m+[m[32m# Visual Studio 2015/2017 cache/options directory[m
+[32m+[m[32m.vs/[m
+[32m+[m[32m# Uncomment if you have tasks that create the project's static files in wwwroot[m
+[32m+[m[32m#wwwroot/[m
+[32m+[m
+[32m+[m[32m# Visual Studio 2017 auto generated files[m
+[32m+[m[32mGenerated\ Files/[m
+[32m+[m
+[32m+[m[32m# MSTest test Results[m
+[32m+[m[32m[Tt]est[Rr]esult*/[m
+[32m+[m[32m[Bb]uild[Ll]og.*[m
+[32m+[m
+[32m+[m[32m# NUnit[m
+[32m+[m[32m*.VisualState.xml[m
+[32m+[m[32mTestResult.xml[m
+[32m+[m[32mnunit-*.xml[m
+[32m+[m
+[32m+[m[32m# Build Results of an ATL Project[m
+[32m+[m[32m[Dd]ebugPS/[m
+[32m+[m[32m[Rr]eleasePS/[m
+[32m+[m[32mdlldata.c[m
+[32m+[m
+[32m+[m[32m# Benchmark Results[m
+[32m+[m[32mBenchmarkDotNet.Artifacts/[m
+[32m+[m
+[32m+[m[32m# .NET Core[m
+[32m+[m[32mproject.lock.json[m
+[32m+[m[32mproject.fragment.lock.json[m
+[32m+[m[32martifacts/[m
+[32m+[m
+[32m+[m[32m# ASP.NET Scaffolding[m
+[32m+[m[32mScaffoldingReadMe.txt[m
+[32m+[m
+[32m+[m[32m# StyleCop[m
+[32m+[m[32mStyleCopReport.xml[m
+[32m+[m
+[32m+[m[32m# Files built by Visual Studio[m
+[32m+[m[32m*_i.c[m
+[32m+[m[32m*_p.c[m
+[32m+[m[32m*_h.h[m
+[32m+[m[32m*.ilk[m
+[32m+[m[32m*.meta[m
+[32m+[m[32m*.obj[m
+[32m+[m[32m*.iobj[m
+[32m+[m[32m*.pch[m
+[32m+[m[32m*.pdb[m
+[32m+[m[32m*.ipdb[m
+[32m+[m[32m*.pgc[m
+[32m+[m[32m*.pgd[m
+[32m+[m[32m*.rsp[m
+[32m+[m[32m*.sbr[m
+[32m+[m[32m*.tlb[m
+[32m+[m[32m*.tli[m
+[32m+[m[32m*.tlh[m
+[32m+[m[32m*.tmp[m
+[32m+[m[32m*.tmp_proj[m
+[32m+[m[32m*_wpftmp.csproj[m
+[32m+[m[32m*.log[m
+[32m+[m[32m*.vspscc[m
+[32m+[m[32m*.vssscc[m
+[32m+[m[32m.builds[m
+[32m+[m[32m*.pidb[m
+[32m+[m[32m*.svclog[m
+[32m+[m[32m*.scc[m
+[32m+[m
+[32m+[m[32m# Chutzpah Test files[m
+[32m+[m[32m_Chutzpah*[m
+[32m+[m
+[32m+[m[32m# Visual C++ cache files[m
+[32m+[m[32mipch/[m
+[32m+[m[32m*.aps[m
+[32m+[m[32m*.ncb[m
+[32m+[m[32m*.opendb[m
+[32m+[m[32m*.opensdf[m
+[32m+[m[32m*.sdf[m
+[32m+[m[32m*.cachefile[m
+[32m+[m[32m*.VC.db[m
+[32m+[m[32m*.VC.VC.opendb[m
+[32m+[m
+[32m+[m[32m# Visual Studio profiler[m
+[32m+[m[32m*.psess[m
+[32m+[m[32m*.vsp[m
+[32m+[m[32m*.vspx[m
+[32m+[m[32m*.sap[m
+[32m+[m
+[32m+[m[32m# Visual Studio Trace Files[m
+[32m+[m[32m*.e2e[m
+[32m+[m
+[32m+[m[32m# TFS 2012 Local Workspace[m
+[32m+[m[32m$tf/[m
+[32m+[m
+[32m+[m[32m# Guidance Automation Toolkit[m
+[32m+[m[32m*.gpState[m
+[32m+[m
+[32m+[m[32m# ReSharper is a .NET coding add-in[m
+[32m+[m[32m_ReSharper*/[m
+[32m+[m[32m*.[Rr]e[Ss]harper[m
+[32m+[m[32m*.DotSettings.user[m
+[32m+[m
+[32m+[m[32m# TeamCity is a build add-in[m
+[32m+[m[32m_TeamCity*[m
+[32m+[m
+[32m+[m[32m# DotCover is a Code Coverage Tool[m
+[32m+[m[32m*.dotCover[m
+[32m+[m
+[32m+[m[32m# AxoCover is a Code Coverage Tool[m
+[32m+[m[32m.axoCover/*[m
+[32m+[m[32m!.axoCover/settings.json[m
+[32m+[m
+[32m+[m[32m# Coverlet is a free, cross platform Code Coverage Tool[m
+[32m+[m[32mcoverage*.json[m
+[32m+[m[32mcoverage*.xml[m
+[32m+[m[32mcoverage*.info[m
+[32m+[m
+[32m+[m[32m# Visual Studio code coverage results[m
+[32m+[m[32m*.coverage[m
+[32m+[m[32m*.coveragexml[m
+[32m+[m
+[32m+[m[32m# NCrunch[m
+[32m+[m[32m_NCrunch_*[m
+[32m+[m[32m.*crunch*.local.xml[m
+[32m+[m[32mnCrunchTemp_*[m
+[32m+[m
+[32m+[m[32m# MightyMoose[m
+[32m+[m[32m*.mm.*[m
+[32m+[m[32mAutoTest.Net/[m
+[32m+[m
+[32m+[m[32m# Web workbench (sass)[m
+[32m+[m[32m.sass-cache/[m
+[32m+[m
+[32m+[m[32m# Installshield output folder[m
+[32m+[m[32m[Ee]xpress/[m
+[32m+[m
+[32m+[m[32m# DocProject is a documentation generator add-in[m
+[32m+[m[32mDocProject/buildhelp/[m
+[32m+[m[32mDocProject/Help/*.HxT[m
+[32m+[m[32mDocProject/Help/*.HxC[m
+[32m+[m[32mDocProject/Help/*.hhc[m
+[32m+[m[32mDocProject/Help/*.hhk[m
+[32m+[m[32mDocProject/Help/*.hhp[m
+[32m+[m[32mDocProject/Help/Html2[m
+[32m+[m[32mDocProject/Help/html[m
+[32m+[m
+[32m+[m[32m# Click-Once directory[m
+[32m+[m[32mpublish/[m
+[32m+[m
+[32m+[m[32m# Publish Web Output[m
+[32m+[m[32m*.[Pp]ublish.xml[m
+[32m+[m[32m*.azurePubxml[m
+[32m+[m[32m# Note: Comment the next line if you want to checkin your web deploy settings,[m
+[32m+[m[32m# but database connection strings (with potential passwords) will be unencrypted[m
+[32m+[m[32m*.pubxml[m
+[32m+[m[32m*.publishproj[m
+[32m+[m
+[32m+[m[32m# Microsoft Azure Web App publish settings. Comment the next line if you want to[m
+[32m+[m[32m# checkin your Azure Web App publish settings, but sensitive information contained[m
+[32m+[m[32m# in these scripts will be unencrypted[m
+[32m+[m[32mPublishScripts/[m
+[32m+[m
+[32m+[m[32m# NuGet Packages[m
+[32m+[m[32m*.nupkg[m
+[32m+[m[32m# NuGet Symbol Packages[m
+[32m+[m[32m*.snupkg[m
+[32m+[m[32m# The packages folder can be ignored because of Package Restore[m
+[32m+[m[32m**/[Pp]ackages/*[m
+[32m+[m[32m# except build/, which is used as an MSBuild target.[m
+[32m+[m[32m!**/[Pp]ackages/build/[m
+[32m+[m[32m# Uncomment if necessary however generally it will be regenerated when needed[m
+[32m+[m[32m#!**/[Pp]ackages/repositories.config[m
+[32m+[m[32m# NuGet v3's project.json files produces more ignorable files[m
+[32m+[m[32m*.nuget.props[m
+[32m+[m[32m*.nuget.targets[m
+[32m+[m
+[32m+[m[32m# Microsoft Azure Build Output[m
+[32m+[m[32mcsx/[m
+[32m+[m[32m*.build.csdef[m
+[32m+[m
+[32m+[m[32m# Microsoft Azure Emulator[m
+[32m+[m[32mecf/[m
+[32m+[m[32mrcf/[m
+[32m+[m
+[32m+[m[32m# Windows Store app package directories and files[m
+[32m+[m[32mAppPackages/[m
+[32m+[m[32mBundleArtifacts/[m
+[32m+[m[32mPackage.StoreAssociation.xml[m
+[32m+[m[32m_pkginfo.txt[m
+[32m+[m[32m*.appx[m
+[32m+[m[32m*.appxbundle[m
+[32m+[m[32m*.appxupload[m
+[32m+[m
+[32m+[m[32m# Visual Studio cache files[m
+[32m+[m[32m# files ending in .cache can be ignored[m
+[32m+[m[32m*.[Cc]ache[m
+[32m+[m[32m# but keep track of directories ending in .cache[m
+[32m+[m[32m!?*.[Cc]ache/[m
+[32m+[m
+[32m+[m[32m# Others[m
+[32m+[m[32mClientBin/[m
+[32m+[m[32m~$*[m
+[32m+[m[32m*~[m
+[32m+[m[32m*.dbmdl[m
+[32m+[m[32m*.dbproj.schemaview[m
+[32m+[m[32m*.jfm[m
+[32m+[m[32m*.pfx[m
+[32m+[m[32m*.publishsettings[m
+[32m+[m[32morleans.codegen.cs[m
+[32m+[m
+[32m+[m[32m# Including strong name files can present a security risk[m
+[32m+[m[32m# (https://github.com/github/gitignore/pull/2483#issue-259490424)[m
+[32m+[m[32m#*.snk[m
+[32m+[m
+[32m+[m[32m# Since there are multiple workflows, uncomment next line to ignore bower_components[m
+[32m+[m[32m# (https://github.com/github/gitignore/pull/1529#issuecomment-104372622)[m
+[32m+[m[32m#bower_components/[m
+[32m+[m
+[32m+[m[32m# RIA/Silverlight projects[m
+[32m+[m[32mGenerated_Code/[m
+[32m+[m
+[32m+[m[32m# Backup & report files from converting an old project file[m
+[32m+[m[32m# to a newer Visual Studio version. Backup files are not needed,[m
+[32m+[m[32m# because we have git ;-)[m
+[32m+[m[32m_UpgradeReport_Files/[m
+[32m+[m[32mBackup*/[m
+[32m+[m[32mUpgradeLog*.XML[m
+[32m+[m[32mUpgradeLog*.htm[m
+[32m+[m[32mServiceFabricBackup/[m
+[32m+[m[32m*.rptproj.bak[m
+[32m+[m
+[32m+[m[32m# SQL Server files[m
+[32m+[m[32m*.mdf[m
+[32m+[m[32m*.ldf[m
+[32m+[m[32m*.ndf[m
+[32m+[m
+[32m+[m[32m# Business Intelligence projects[m
+[32m+[m[32m*.rdl.data[m
+[32m+[m[32m*.bim.layout[m
+[32m+[m[32m*.bim_*.settings[m
+[32m+[m[32m*.rptproj.rsuser[m
+[32m+[m[32m*- [Bb]ackup.rdl[m
+[32m+[m[32m*- [Bb]ackup ([0-9]).rdl[m
+[32m+[m[32m*- [Bb]ackup ([0-9][0-9]).rdl[m
+[32m+[m
+[32m+[m[32m# Microsoft Fakes[m
+[32m+[m[32mFakesAssemblies/[m
+[32m+[m
+[32m+[m[32m# GhostDoc plugin setting file[m
+[32m+[m[32m*.GhostDoc.xml[m
+[32m+[m
+[32m+[m[32m# Node.js Tools for Visual Studio[m
+[32m+[m[32m.ntvs_analysis.dat[m
+[32m+[m[32mnode_modules/[m
+[32m+[m
+[32m+[m[32m# Visual Studio 6 build log[m
+[32m+[m[32m*.plg[m
+[32m+[m
+[32m+[m[32m# Visual Studio 6 workspace options file[m
+[32m+[m[32m*.opt[m
+[32m+[m
+[32m+[m[32m# Visual Studio 6 auto-generated workspace file (contains which files were open etc.)[m
+[32m+[m[32m*.vbw[m
+[32m+[m
+[32m+[m[32m# Visual Studio LightSwitch build output[m
+[32m+[m[32m**/*.HTMLClient/GeneratedArtifacts[m
+[32m+[m[32m**/*.DesktopClient/GeneratedArtifacts[m
+[32m+[m[32m**/*.DesktopClient/ModelManifest.xml[m
+[32m+[m[32m**/*.Server/GeneratedArtifacts[m
+[32m+[m[32m**/*.Server/ModelManifest.xml[m
+[32m+[m[32m_Pvt_Extensions[m
+[32m+[m
+[32m+[m[32m# Paket dependency manager[m
+[32m+[m[32m.paket/paket.exe[m
+[32m+[m[32mpaket-files/[m
+[32m+[m
+[32m+[m[32m# FAKE - F# Make[m
+[32m+[m[32m.fake/[m
+[32m+[m
+[32m+[m[32m# CodeRush personal settings[m
+[32m+[m[32m.cr/personal[m
+[32m+[m
+[32m+[m[32m# Python Tools for Visual Studio (PTVS)[m
+[32m+[m[32m__pycache__/[m
+[32m+[m[32m*.pyc[m
+[32m+[m
+[32m+[m[32m# Cake - Uncomment if you are using it[m
+[32m+[m[32m# tools/**[m
+[32m+[m[32m# !tools/packages.config[m
+[32m+[m
+[32m+[m[32m# Tabs Studio[m
+[32m+[m[32m*.tss[m
+[32m+[m
+[32m+[m[32m# Telerik's JustMock configuration file[m
+[32m+[m[32m*.jmconfig[m
+[32m+[m
+[32m+[m[32m# BizTalk build output[m
+[32m+[m[32m*.btp.cs[m
+[32m+[m[32m*.btm.cs[m
+[32m+[m[32m*.odx.cs[m
+[32m+[m[32m*.xsd.cs[m
+[32m+[m
+[32m+[m[32m# OpenCover UI analysis results[m
+[32m+[m[32mOpenCover/[m
+[32m+[m
+[32m+[m[32m# Azure Stream Analytics local run output[m
+[32m+[m[32mASALocalRun/[m
+[32m+[m
+[32m+[m[32m# MSBuild Binary and Structured Log[m
+[32m+[m[32m*.binlog[m
+[32m+[m
+[32m+[m[32m# NVidia Nsight GPU debugger configuration file[m
+[32m+[m[32m*.nvuser[m
+[32m+[m
+[32m+[m[32m# MFractors (Xamarin productivity tool) working folder[m
+[32m+[m[32m.mfractor/[m
+[32m+[m
+[32m+[m[32m# Local History for Visual Studio[m
+[32m+[m[32m.localhistory/[m
+[32m+[m
+[32m+[m[32m# BeatPulse healthcheck temp database[m
+[32m+[m[32mhealthchecksdb[m
+[32m+[m
+[32m+[m[32m# Backup folder for Package Reference Convert tool in Visual Studio 2017[m
+[32m+[m[32mMigrationBackup/[m
+[32m+[m
+[32m+[m[32m# Ionide (cross platform F# VS Code tools) working folder[m
+[32m+[m[32m.ionide/[m
+[32m+[m
+[32m+[m[32m# Fody - auto-generated XML schema[m
+[32m+[m[32mFodyWeavers.xsd[m
+\ No newline at end of file[m
+[1mdiff --git a/README.md b/README.md[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ffbe48b[m
+[1m--- /dev/null[m
+[1m+++ b/README.md[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32m# tdd-by-example-the-money-csharp[m
+\ No newline at end of file[m
