@@ -87,5 +87,16 @@ namespace tdd_by_example_the_money_csharp
             var result = bank.reduce(Money.franc(2), "USD");
             result.Should().Be(Money.dollar(1));
         }
+
+        [Test]
+        public void testMixedAddition()
+        {
+            Expression fiveBucks = Money.dollar(5);
+            Expression tenBucks = Money.franc(10);
+            Bank bank = new Bank();
+            bank.addRate("CHF", "USD", 2);
+            bank.reduce(fiveBucks.plus(tenBucks), "USD");
+
+        }
     }
 }
