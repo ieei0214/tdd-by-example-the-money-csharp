@@ -98,5 +98,17 @@ namespace tdd_by_example_the_money_csharp
             bank.reduce(fiveBucks.plus(tenBucks), "USD");
 
         }
+
+        [Test]
+        public void testSumPlusMoney()
+        {
+            Expression fiveBucks = Money.dollar(5);
+            var tenFrancs = Money.franc(10);
+            Bank bank = new Bank();
+            bank.addRate("CFH", "USD", 2);
+            Expression sum = new Sum(fiveBucks, tenFrancs).plus(fiveBucks);
+            Money result = bank.reduce(sum,"USD");
+            result.Should().Be(Money.dollar(15));
+        }
     }
 }
