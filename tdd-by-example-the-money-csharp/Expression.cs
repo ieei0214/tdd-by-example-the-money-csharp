@@ -10,5 +10,6 @@ namespace tdd_by_example_the_money_csharp
     {
         public Money reduce(Bank bank, string to);
         Expression plus(Expression addend);
+        Expression times(int multiplier);
     }
 }
