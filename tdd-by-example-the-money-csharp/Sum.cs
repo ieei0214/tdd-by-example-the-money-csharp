@@ -2,8 +2,8 @@ namespace tdd_by_example_the_money_csharp;
 
 public class Sum : Expression
 {
-    public Money augend;
-    public Money addend;
+    public Expression augend;
+    public Expression addend;
 
     public Sum(Money money, Money addend)
     {
@@ -13,7 +13,7 @@ public class Sum : Expression
 
     public Money reduce(Bank bank, string to)
     {
-        int amount = augend.Amount + addend.Amount;
+        int amount = augend.reduce(bank, to).Amount + addend.reduce(bank, to).Amount;
         return new Money(amount, to);
     }
 }
