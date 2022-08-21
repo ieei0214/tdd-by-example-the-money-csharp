@@ -11,9 +11,9 @@ public class Bank
         return source.reduce(this, to);
     }
 
-    public void addRate(string source, string to, int rate)
+    public void addRate(string from, string to, int rate)
     {
-        
+        rates.Add(new Pair(from, to), rate);
     }
 
     public int rate(string from, string to)
