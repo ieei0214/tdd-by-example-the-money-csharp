@@ -110,5 +110,17 @@ namespace tdd_by_example_the_money_csharp
             Money result = bank.reduce(sum,"USD");
             result.Should().Be(Money.dollar(15));
         }
+
+        [Test]
+        public void testSumTimes()
+        {
+            Expression fiveBucks = Money.dollar(5);
+            var tenFrancs = Money.franc(10);
+            Bank bank = new Bank();
+            bank.addRate("CHF", "USD", 2);
+            Expression sum = new Sum(fiveBucks, tenFrancs).times(2);
+            Money result = bank.reduce(sum, "USD");
+            result.Should().Be(Money.dollar(20));
+        }
     }
 }
