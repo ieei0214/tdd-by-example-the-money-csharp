@@ -78,5 +78,14 @@ namespace tdd_by_example_the_money_csharp
             Money result = bank.reduce(Money.dollar(1), "USD");
             result.Should().Be(Money.dollar(1));
         }
+
+        [Test]
+        public void testReduceMoneyDifferentCurrency()
+        {
+            var bank = new Bank();
+            bank.addRate("CHF", "USD", 2);
+            var result = bank.reduce(Money.franc(2), "USD");
+            result.Should().Be(Money.dollar(1));
+        }
     }
 }
