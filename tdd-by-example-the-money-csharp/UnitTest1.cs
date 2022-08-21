@@ -122,5 +122,12 @@ namespace tdd_by_example_the_money_csharp
             Money result = bank.reduce(sum, "USD");
             result.Should().Be(Money.dollar(20));
         }
+
+        [Test]
+        public void testPlusSameCurrencyReturnMoney()
+        {
+            var sum = Money.dollar(1).plus(Money.dollar(1));
+            sum.GetType().Should().BeOfType<Money>();
+        }
     }
 }
