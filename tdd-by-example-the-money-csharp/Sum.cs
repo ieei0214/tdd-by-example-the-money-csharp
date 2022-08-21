@@ -5,7 +5,7 @@ public class Sum : Expression
     public Expression augend;
     public Expression addend;
 
-    public Sum(Money money, Money addend)
+    public Sum(Expression money, Expression addend)
     {
         this.augend = money;
         this.addend = addend;
