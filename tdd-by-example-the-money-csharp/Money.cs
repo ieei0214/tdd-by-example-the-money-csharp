@@ -27,7 +27,7 @@ public class Money : Expression
         return new Money(amount, "CHF");
     }
 
-    public virtual Money times(int multiplier)
+    public virtual Expression times(int multiplier)
     {
         return new Money(Amount * multiplier, Currency);
     }
